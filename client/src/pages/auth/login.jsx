@@ -4,10 +4,11 @@ import { Link } from "react-router-dom";
 
 const Login = ({ isLoading = false, error = null }) => {
   return (
-    <div className="w-full max-w-md bg-white/5 backdrop-blur-xl p-10 rounded-xl shadow-lg space-y-8">
+    <div className="w-full max-w-md bg-white/5 backdrop-blur-xl p-10 rounded-xl shadow-lg space-y-3">
     <h2 className="text-3xl flex items-center justify-center font-semibold text-gray-500 ">
         Welcome
     </h2>
+    <p className="text-md flex items-center justify-center font-semibold text-gray-500">To get started fill the information below . .</p>
     <motion.div
       initial={{ opacity: 0, x: 30 }}
       animate={{ opacity: 1, x: 0 }}
@@ -90,7 +91,7 @@ const Login = ({ isLoading = false, error = null }) => {
       <div className="px-8 py-4 bg-gray-800/80 text-center border-t border-white/10">
         <p className="text-sm text-gray-400">
           Don&apos;t have an account?{" "}
-          <Link to="/signup" className="text-cyan-400 hover:underline">
+          <Link to="/auth/register" className="text-white hover:underline">
             Sign up
           </Link>
         </p>

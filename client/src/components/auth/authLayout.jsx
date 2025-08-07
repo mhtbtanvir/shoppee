@@ -18,7 +18,7 @@ const AuthLayout = () => {
       
      
 <div
-  className="flex-1 relative flex flex-col justify-center items-center p-4 shadow-2xl border border-gray-800 text-white"
+  className="flex-1 w-fixed relative flex flex-col justify-center items-center p-4 shadow-2xl border border-gray-800 text-white"
   style={{
     backgroundImage: `url(${backgroundImage})`,
     backgroundSize: 'cover',
@@ -31,27 +31,28 @@ const AuthLayout = () => {
 
   {/* Gradient overlay */}
   <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 to-indigo-700 opacity-20 rounded-l-xl -z-5"></div>
-
+   {/* Buttons */}
   <div className="flex flex-col justify-end h-screen gap-6 z-10 relative text-center">
       <div className="flex flex-col justify-center gap-4">
       <Link
         to="/auth/login"
-        className="px-6 py-2 text-slate-100 rounded-lg font-semibold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-transform transform hover:scale-105 shadow-md"
+        className="px-6 py-2 text-slate-100 hover:text-white border-2 border-gray-200 rounded-lg font-semibold bg-gradient-to-r from-green-500 to-emerald-600 transition-transform transform hover:scale-105 shadow-md"
       >
         Login
       </Link>
       <Link
         to="/auth/register"
-        className="px-6 py-2 text-slate-100 rounded-lg font-semibold bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-transform transform hover:scale-105 shadow-md"
+        className="px-6 py-2 text-slate-100 hover:text-white border-2 border-gray-200 rounded-lg font-semibold bg-gradient-to-r from-blue-500 to-indigo-600  transition-transform transform hover:scale-105 shadow-md"
       >
         Register
       </Link>
     </div>
-    <p className="text-lg text-slate-200">
-      Log in or register to continue...
+
+    <p className="text-lg  text-slate-200">
+      Login or register to continue...
     </p>
 
-    {/* Buttons */}
+    
   
   </div>
 </div>
