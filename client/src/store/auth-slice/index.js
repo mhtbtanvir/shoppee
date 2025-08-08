@@ -1,13 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-
 const initialState = {
   isAuthenticated: false,
   user: null,
+  email: null, // store email for OTP
   error: null,
   loading: false,
 };
-
 
 const authSlice = createSlice({
   name: 'auth',
@@ -34,15 +33,21 @@ const authSlice = createSlice({
       state.user = null;
       state.loading = false;
       state.error = null;
+      state.email = null;
+    },
+    setResetEmail: (state, action) => {
+      state.email = action.payload;
     },
   },
+});
 
-})
 export const {
   loginRequest,
   loginSuccess,
   loginFailure,
   logout,
+  setResetEmail,
 } = authSlice.actions;
 
-export default authSlice.reducer;   
+export default authSlice.reducer;
+export const selectAuth = (state) => state.auth;

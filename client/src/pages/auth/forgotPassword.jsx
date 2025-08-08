@@ -2,20 +2,22 @@ import { motion } from "framer-motion";
 import { Mail, ArrowLeft, Loader } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+// import { useDispatch } from "react-redux";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
+  // const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setError(null);
-    setSuccess(null);
+    setError("");
+    setSuccess("");
 
     try {
       const res = await fetch("http://localhost:5000/api/auth/forgot-password", {
@@ -25,24 +27,21 @@ const ForgotPassword = () => {
       });
 
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.message || "Failed to send reset code");
 
-      setSuccess(data.message);
+      // Store email in Redux
+      // dispatch(setResetEmail(email));
+      localStorage.setItem("resetEmail", email); // ✅ persist
 
-      // Redirect to OTP page after 2 seconds
-      setTimeout(() => {
-      localStorage.setItem("resetEmail", email);
-      navigate("/auth/OTP", { state: { email } });
-      }, 2000);
 
+      setSuccess(data.message || "OTP sent to your email");
+      navigate("/auth/OTP");
     } catch (err) {
       setError(err.message);
     } finally {
       setIsLoading(false);
     }
   };
-
   return (
     <div className="w-full px-4 sm:px-6 md:px-8 lg:px-0 flex justify-center items-center min-h-screen">
       <div className="w-full max-w-md space-y-4">

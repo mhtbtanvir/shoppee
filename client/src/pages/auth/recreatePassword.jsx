@@ -6,12 +6,12 @@ import { useState } from "react";
 const RecreatePassword = () => {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const email = localStorage.getItem("resetEmail");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,11 +21,10 @@ const RecreatePassword = () => {
       return;
     }
 
-    if (!email) {
-      setError("Email is required.");
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long!");
       return;
     }
-
     setIsLoading(true);
     setError(null);
 
@@ -80,12 +79,12 @@ const RecreatePassword = () => {
             <form className="space-y-5" onSubmit={handleSubmit}>
               <div className="relative">
                 <input
-                  type="email"
-                  placeholder="Email Address"
+                  
+                  placeholder={email}
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-4 pr-4 py-3 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white transition-all"
+                  // onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-4 pr-4 py-3 rounded-lg bg-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white transition-all"
                   autoComplete="email"
                 />
               </div>

@@ -1,24 +1,52 @@
-import { useState } from "react";
+
 import { motion } from "framer-motion";
 import { Mail, Lock, User, Loader } from "lucide-react";
 import { Link } from "react-router-dom";
 import { CheckCircle } from "lucide-react"; // import tick icon
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
-  // State
+  const navigate = useNavigate();
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false); // New success state
+  const [success, setSuccess] = useState(false);
+  const [countdown, setCountdown] = useState(8);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // Handle redirect countdown
+  useEffect(() => {
+    if (success) {
+      const timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev === 1) {
+            clearInterval(timer);
+            navigate("/auth/login");
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [success, navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
     setError(null);
-    setSuccess(false); // Reset success on new submit
+    setSuccess(false);
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
       const res = await fetch("http://localhost:5000/api/auth/register", {
@@ -27,16 +55,16 @@ const Register = () => {
         credentials: "include",
         body: JSON.stringify({ name, email, password }),
       });
+
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.message || "Failed to register");
 
-      // Instead of alert, show success message
       setSuccess(true);
-      // Optionally clear form
       setName("");
       setEmail("");
       setPassword("");
+      setCountdown(8); // Reset countdown for redirect
     } catch (err) {
       setError(err.message);
     } finally {
@@ -163,6 +191,12 @@ const Register = () => {
                 )}
               </motion.button>
             </form>
+               {success && (
+          <p className="text-green-600">
+            Registration successful! Redirecting to login in {countdown} second
+            {countdown !== 1 ? "s" : ""}...
+          </p>
+        )}
           </div>
 
           {/* Footer */}
