@@ -87,8 +87,8 @@ const verifyOTP = async (req, res) => {
     }
 
     // OTP is valid: clear otp and expiry if needed
-    user.resetOTP = undefined;
-    user.resetOTPExpiry = undefined;
+    // user.resetOTP = undefined;
+    // user.resetOTPExpiry = undefined;
     await user.save();
 //     console.log("User resetOTP:", user.resetOTP);
 // console.log("Provided OTP:", otp);
@@ -123,6 +123,7 @@ const recreatePassword = async (req, res) => {
     if (user.resetOTP !== otp || user.resetOTPExpiry < Date.now()) {
     return res.status(400).json({ message: 'Invalid or expired OTP.' });
     }
+  
     const hashedPassword = await bcrypt.hash(newPassword, 12);
     user.password = newPassword;  // assign plain password
     

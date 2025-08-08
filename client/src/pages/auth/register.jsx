@@ -192,7 +192,7 @@ const Register = () => {
               </motion.button>
             </form>
                {success && (
-          <p className="text-green-600">
+          <p className="text-sm text-gray-400 p-2">
             Registration successful! Redirecting to login in {countdown} second
             {countdown !== 1 ? "s" : ""}...
           </p>

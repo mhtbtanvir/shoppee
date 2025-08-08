@@ -29,7 +29,7 @@ const email = localStorage.getItem("resetEmail");
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "OTP verification failed");
-      
+
       localStorage.setItem("resetOTP", otp);
 
       setSuccess(data.message || "OTP verified successfully");

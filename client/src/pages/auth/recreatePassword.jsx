@@ -13,6 +13,8 @@ const RecreatePassword = () => {
   const [success, setSuccess] = useState(null);
   const email = localStorage.getItem("resetEmail");
   const otp = localStorage.getItem("resetOTP");
+    
+ 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +30,10 @@ const RecreatePassword = () => {
     }
     setIsLoading(true);
     setError(null);
+    //  const randtoken = crypto.getRandomValues(new Uint8Array(16))
+    //   .reduce((acc, byte) => acc + byte.toString(16).padStart(2, "0"), "");
 
+    
     try {
       const res = await fetch("http://localhost:5000/api/auth/recreate-password", {
         method: "POST",
@@ -41,6 +46,8 @@ const RecreatePassword = () => {
       if (!res.ok) throw new Error(data.message || "Failed to reset password");
 
       setSuccess("Password reset successful! Redirecting to login...");
+      localStorage.removeItem("resetEmail");
+      localStorage.removeItem("resetOTP");
       setTimeout(() => {
         navigate("/auth/login");
       }, 3000);
