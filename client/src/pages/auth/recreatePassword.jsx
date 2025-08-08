@@ -12,6 +12,7 @@ const RecreatePassword = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const email = localStorage.getItem("resetEmail");
+  const otp = localStorage.getItem("resetOTP");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,7 +33,7 @@ const RecreatePassword = () => {
       const res = await fetch("http://localhost:5000/api/auth/recreate-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, newPassword: password }),
+        body: JSON.stringify({ email, newPassword: password, otp }),
       });
 
       const data = await res.json();

@@ -17,7 +17,10 @@ const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
   try {
     if (await User.findOne({ email })) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ message: 'email already exists' });
+    }
+     if (await User.findOne({ name })) {
+      return res.status(400).json({ message: 'Username already exists.choose another.' });
     }
     const user = await User.create({ name, email, password });
     const token = signToken(user._id);
@@ -55,7 +58,7 @@ const forgotPassword = async (req, res) => {
     const otp = crypto.randomInt(100000, 999999).toString();
 
     user.resetOTP = otp;
-    user.resetOTPExpiry = Date.now() + 10 * 60 * 1000;
+    user.resetOTPExpiry = Date.now() + 5 * 60 * 1000;
     await user.save();
 
 await sendEmail(user.email, 'Your Password Reset OTP', otp);
@@ -87,9 +90,9 @@ const verifyOTP = async (req, res) => {
     user.resetOTP = undefined;
     user.resetOTPExpiry = undefined;
     await user.save();
-    console.log("User resetOTP:", user.resetOTP);
-console.log("Provided OTP:", otp);
-console.log("OTP expiry:", user.resetOTPExpiry);
+//     console.log("User resetOTP:", user.resetOTP);
+// console.log("Provided OTP:", otp);
+// console.log("OTP expiry:", user.resetOTPExpiry);
 
 
     return res.json({ message: "OTP verified successfully" });
@@ -104,9 +107,10 @@ console.log("OTP expiry:", user.resetOTPExpiry);
 
 
 const recreatePassword = async (req, res) => {
-  const { email, newPassword } = req.body;
+  const { email, newPassword, otp } = req.body;
 
-  if (!email || !newPassword) {
+//  const email = localStorage.getItem("resetEmail");
+  if (!email || !newPassword || !otp) {
     return res.status(400).json({ message: 'Email and new password are required.' });
   }
 
@@ -115,7 +119,10 @@ const recreatePassword = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: 'User not found' });
-
+// Verify OTP is correct and not expired
+    if (user.resetOTP !== otp || user.resetOTPExpiry < Date.now()) {
+    return res.status(400).json({ message: 'Invalid or expired OTP.' });
+    }
     const hashedPassword = await bcrypt.hash(newPassword, 12);
     user.password = newPassword;  // assign plain password
     
