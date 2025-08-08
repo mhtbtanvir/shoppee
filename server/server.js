@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 5000;
 
 
 app.use(cors({
-    origin: "http://localhost:5174",
+    origin: "http://localhost:5173",
     methods: ['GET', 'POST', 'DELETE', 'PUT'],
     allowedHeaders: 
         [
@@ -31,6 +31,15 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
+
+// app.use('/api/auth', (req, res, next) => {
+//   console.log('Headers:', req.headers);
+//   console.log('Body:', req.body);
+//   next();
+// });
+
+app.use('/api/auth', require('./routes/authRoutes'));
+
 
 app.listen(PORT,()=>
     console.log(`Server is running on port ${PORT}`)
