@@ -92,7 +92,7 @@ const Register = () => {
             Welcome to Shoppee!
           </p>
           <p className="text-sm text-gray-400">
-            Fill up a few information below . . .
+            Fill up a few informations below . . .
           </p>
         </div>
 
