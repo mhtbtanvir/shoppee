@@ -16,7 +16,7 @@ function App() {
           <Route path="register" element={<Register />} />
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="otp" element={<OTP />} />
-          <Route path="recreatepassword" element={<RecreatePassword />} />
+          <Route path="recreate-password" element={<RecreatePassword />} />
         </Route>
 
         <Route path="/" element={<HomePage />} />

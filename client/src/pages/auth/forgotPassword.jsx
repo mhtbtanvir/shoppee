@@ -2,11 +2,12 @@ import { motion } from "framer-motion";
 import { Mail, ArrowLeft, Loader } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-// import { useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
+import { setResetEmail, setOtpMode } from "../../store/auth-slice/index"; // adjust path
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +21,7 @@ const ForgotPassword = () => {
     setSuccess("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/forgot-password", {
+      const res = await fetch("http://localhost:5000/api/auth/forgot-password/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -29,19 +30,22 @@ const ForgotPassword = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to send reset code");
 
-      // Store email in Redux
-      // dispatch(setResetEmail(email));
-      localStorage.setItem("resetEmail", email); // ✅ persist
+      // Store email and otpMode in Redux
+      dispatch(setResetEmail(email));
+      dispatch(setOtpMode("forgot-password"));
 
+      // Optionally also store in localStorage if you want persistence
+      // localStorage.setItem("resetEmail", email);
 
       setSuccess(data.message || "OTP sent to your email");
-      navigate("/auth/OTP");
+      navigate("/auth/otp");
     } catch (err) {
       setError(err.message);
     } finally {
       setIsLoading(false);
     }
   };
+
   return (
     <div className="w-full px-4 sm:px-6 md:px-8 lg:px-0 flex justify-center items-center min-h-screen">
       <div className="w-full max-w-md space-y-4">

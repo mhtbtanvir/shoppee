@@ -17,7 +17,7 @@ const sendEmail = async (to, subject, otp) => {
     from: `"Shoppee" <${process.env.SMTP_USER}>`,
     to,
     subject,
-    text: `Your OTP code is: ${otp}. It expires in 10 minutes.`,
+    text: `Your OTP code is: ${otp}. It expires in 5 minutes.`,
   });
 };
 

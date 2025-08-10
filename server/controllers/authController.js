@@ -1,37 +1,94 @@
+
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
 const sendEmail = require('../utils/sendEmail');
+const redisClient = require('../utils/redisClient');
 
+const signToken = (id, role) =>
+  jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-// Utility to sign JWT
-const signToken = (id) => 
-  jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-    // console.log("JWT_SECRET:", process.env.JWT_SECRET);
+const OTP_TTL_SECONDS = 5 * 60; // 5 minutes
 
-// Register
+// --- Helper: generate 6-digit OTP ---
+const generateOTP = () => crypto.randomInt(100000, 999999).toString();
 
-const registerUser = async (req, res) => {
+// --- Registration Step 1: Send OTP & store data in Redis ---
+const sendRegistrationOTP = async (req, res) => {
   const { name, email, password } = req.body;
   try {
     if (await User.findOne({ email })) {
-      return res.status(400).json({ message: 'email already exists' });
+      return res.status(400).json({ message: 'Email already registered' });
     }
-     if (await User.findOne({ name })) {
-      return res.status(400).json({ message: 'Username already exists.choose another.' });
+    if (await User.findOne({ name })) {
+      return res.status(400).json({ message: 'Username already taken' });
     }
-    const user = await User.create({ name, email, password });
-    const token = signToken(user._id);
-    res.cookie('token', token, { httpOnly: true });
-    res.status(201).json({ message: 'User registered', user: { name: user.name, email: user.email } });
+
+    const otp = generateOTP();
+    const otpExpiry = Date.now() + OTP_TTL_SECONDS * 1000;
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    const redisKey = `register:${email}`;
+    const data = JSON.stringify({ name, hashedPassword, otp, otpExpiry });
+
+    await redisClient.setEx(redisKey, OTP_TTL_SECONDS, data);
+
+    await sendEmail(email, 'Your Registration OTP', `Your OTP is: ${otp}`);
+
+    res.json({ message: 'OTP sent to your email. Please verify to complete registration.' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// Login
+// --- Registration Step 2: Verify OTP and create user ---
+const createUser = async (req, res) => {
+  const { email, otp } = req.body;
+  try {
+    const redisKey = `register:${email}`;
+    const data = await redisClient.get(redisKey);
+
+    if (!data) return res.status(400).json({ message: 'No pending registration or OTP expired' });
+
+    const { name, hashedPassword, otp: storedOtp, otpExpiry } = JSON.parse(data);
+
+    if (storedOtp !== otp) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+    if (Date.now() > otpExpiry) {
+      await redisClient.del(redisKey);
+      return res.status(400).json({ message: 'OTP expired' });
+    }
+
+    // Determine role based on email and environment variable
+    // const role = email === process.env.ADMIN_EMAIL ||  ? 'admin' : 'user';
+    const role = (email === process.env.ADMIN_EMAIL || email === "admin@mail.com") ? 'admin' : 'user';
+
+    // Create user with role
+    const user = await User.create({ name, email, password: hashedPassword, role });
+
+    await redisClient.del(redisKey);
+
+    const token = signToken(user._id, user.role); // make sure your signToken accepts role
+    res.cookie('token', token, { 
+      httpOnly: true,
+       sameSite: 'strict',
+  // secure: process.env.NODE_ENV === 'production',
+
+     },
+     
+      
+    );
+    
+
+    res.status(201).json({ message: 'User registered successfully', user: { name, email, role } });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// --- Login ---
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -39,100 +96,98 @@ const loginUser = async (req, res) => {
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
-    const token = signToken(user._id);
-    res.cookie('token', token, { httpOnly: true });
-    res.json({ message: 'Logged in successfully', user: { name: user.name, email: user.email } });
+      const token = signToken(user._id, user.role); // make sure your signToken accepts role
+      res.cookie('token',
+         token, 
+         { httpOnly: true ,
+          sameSite: 'strict',
+  // secure: process.env.NODE_ENV === 'production',
+
+         });
+
+      res.json({ message: 'Logged in successfully', user: { name: user.name, email } });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// Forgot Password — generate OTP and "send" email
-
-const forgotPassword = async (req, res) => {
+// --- Password reset step 1: Send OTP & store in Redis ---
+const sendResetOTP = async (req, res) => {
   const { email } = req.body;
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    const otp = crypto.randomInt(100000, 999999).toString();
+    const otp = generateOTP();
+    const otpExpiry = Date.now() + OTP_TTL_SECONDS * 1000;
 
-    user.resetOTP = otp;
-    user.resetOTPExpiry = Date.now() + 5 * 60 * 1000;
-    await user.save();
+    const redisKey = `reset:${email}`;
+    const data = JSON.stringify({ otp, otpExpiry });
 
-await sendEmail(user.email, 'Your Password Reset OTP', otp);
+    await redisClient.setEx(redisKey, OTP_TTL_SECONDS, data);
+
+    await sendEmail(email, 'Your Password Reset OTP', `Your OTP is: ${otp}`);
 
     res.json({ message: 'OTP sent to your email' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-
-
-// Verify OTP
-const verifyOTP = async (req, res) => {
+// --- Password reset step 2: Verify OTP ---
+const verifyResetOTP = async (req, res) => {
   const { email, otp } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const redisKey = `reset:${email}`;
+    const data = await redisClient.get(redisKey);
 
-    if (
-      !user ||
-      !user.resetOTP ||
-      user.resetOTP !== otp ||
-      user.resetOTPExpiry < Date.now()
-    ) {
-      return res.status(400).json({ message: "Invalid or expired OTP" });
+    if (!data) return res.status(400).json({ message: 'No pending reset request or OTP expired' });
+
+    const { otp: storedOtp, otpExpiry } = JSON.parse(data);
+
+    if (storedOtp !== otp) return res.status(400).json({ message: 'Invalid OTP' });
+
+    if (Date.now() > otpExpiry) {
+      await redisClient.del(redisKey);
+      return res.status(400).json({ message: 'OTP expired' });
     }
 
-    // OTP is valid: clear otp and expiry if needed
-    // user.resetOTP = undefined;
-    // user.resetOTPExpiry = undefined;
-    await user.save();
-//     console.log("User resetOTP:", user.resetOTP);
-// console.log("Provided OTP:", otp);
-// console.log("OTP expiry:", user.resetOTPExpiry);
-
-
-    return res.json({ message: "OTP verified successfully" });
+    res.json({ message: 'OTP verified successfully' });
   } catch (err) {
-    console.error("Verify OTP error:", err);
-    return res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: err.message });
   }
 };
 
-
-// Reset Password
-
-
-const recreatePassword = async (req, res) => {
+// --- Password reset step 3: Reset password ---
+const resetPassword = async (req, res) => {
   const { email, newPassword, otp } = req.body;
 
-//  const email = localStorage.getItem("resetEmail");
   if (!email || !newPassword || !otp) {
-    return res.status(400).json({ message: 'Email and new password are required.' });
+    return res.status(400).json({ message: 'Email, new password, and OTP are required.' });
   }
 
   try {
-    // console.log('Request body:', req.body); // For debugging
+    const redisKey = `reset:${email}`;
+    const data = await redisClient.get(redisKey);
+
+    if (!data) return res.status(400).json({ message: 'No pending reset request or OTP expired' });
+
+    const { otp: storedOtp, otpExpiry } = JSON.parse(data);
+
+    if (storedOtp !== otp) return res.status(400).json({ message: 'Invalid OTP' });
+    if (Date.now() > otpExpiry) {
+      await redisClient.del(redisKey);
+      return res.status(400).json({ message: 'OTP expired' });
+    }
 
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: 'User not found' });
-// Verify OTP is correct and not expired
-    if (user.resetOTP !== otp || user.resetOTPExpiry < Date.now()) {
-    return res.status(400).json({ message: 'Invalid or expired OTP.' });
-    }
-  
-    const hashedPassword = await bcrypt.hash(newPassword, 12);
-    user.password = newPassword;  // assign plain password
-    
-    // Clear reset tokens if you have them
-    user.resetOTP = undefined;
-    user.resetOTPExpiry = undefined;
-    
 
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    user.password = hashedPassword;
     await user.save();
+
+    await redisClient.del(redisKey);
 
     res.json({ message: 'Password reset successful' });
   } catch (err) {
@@ -140,11 +195,11 @@ const recreatePassword = async (req, res) => {
   }
 };
 
-
 module.exports = {
-  registerUser,
+  sendRegistrationOTP,
+  createUser,
   loginUser,
-  forgotPassword,
-  verifyOTP,
-  recreatePassword,
+  sendResetOTP,
+  verifyResetOTP,
+  resetPassword,
 };

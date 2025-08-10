@@ -1,39 +1,82 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
-// import { useSelector } from "react-redux";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Loader, ShieldCheck, ArrowLeft } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
-
+import { selectAuth, setOtp } from "../../store/auth-slice/index"; // adjust path
 
 const OTP = () => {
   const navigate = useNavigate();
-// const reduxEmail = useSelector((state) => state.auth.email);
-const email = localStorage.getItem("resetEmail");
-  const [otp, setOtp] = useState("");
+  const dispatch = useDispatch();
+  const { email, otpMode } = useSelector(selectAuth);
+
+  const [otpInput, setOtpInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [countdown, setCountdown] = useState(5);
+
+
+  // Redirect if no otpMode forgot-password or register set in Redux
+  useEffect(() => {
+    if (!otpMode) {
+      navigate("/auth");
+    }
+  }, [otpMode, navigate]);
+
+  // Auto redirect 5 seconds after success message appears
+  useEffect(() => {
+    
+    if (success) {
+      const countdownTimer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+
+            clearInterval(countdownTimer);
+            if (otpMode === "register") {
+              navigate("/auth/login");
+            } else if (otpMode === "forgot-password") {
+              navigate("/auth/recreate-password");
+            }
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(countdownTimer);
+    } else {
+      setCountdown(5); // reset countdown if success becomes false
+    }
+  }, [success, otpMode, navigate]);
 
   const handleVerify = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-    setSuccess("");
+    setSuccess(false);
+    setSuccessMessage("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
+      const apiUrl =
+        otpMode === "register"
+          ? "http://localhost:5000/api/auth/register/verify-otp"
+          : "http://localhost:5000/api/auth/forgot-password/verify-otp";
+
+      const res = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
+        body: JSON.stringify({ email, otp: otpInput }),
+        credentials: "include",
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "OTP verification failed");
 
-      localStorage.setItem("resetOTP", otp);
-
-      setSuccess(data.message || "OTP verified successfully");
-      navigate("/auth/RecreatePassword"); // or wherever you want to go next
+      dispatch(setOtp(otpInput)); // store OTP if needed
+      setSuccess(true);
+      setSuccessMessage(data.message || "OTP verified successfully");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -49,7 +92,9 @@ const email = localStorage.getItem("resetEmail");
             Enter OTP
           </h2>
           <p className="text-sm sm:text-md font-medium text-gray-500">
-            We've sent a one-time password to <span className="font-semibold">{email}</span>. Enter it below to continue.
+            We've sent a one-time password to{" "}
+            <span className="font-semibold">{email}</span>. Enter it below to
+            continue.
           </p>
         </div>
 
@@ -72,9 +117,10 @@ const email = localStorage.getItem("resetEmail");
                 type="text"
                 placeholder="Enter OTP"
                 required
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white transition-all"
+                value={otpInput}
+                onChange={(e) => setOtpInput(e.target.value)}
+                disabled={isLoading || success}
+                className="w-full px-4 py-3 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               />
 
               {error && (
@@ -84,7 +130,8 @@ const email = localStorage.getItem("resetEmail");
               )}
               {success && (
                 <p className="text-green-500 font-medium text-sm text-center">
-                  {success}
+                  {successMessage} Redirecting in {countdown} second
+                  {countdown !== 1 ? "s" : ""}...
                 </p>
               )}
 
@@ -92,7 +139,7 @@ const email = localStorage.getItem("resetEmail");
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || success}
                 className={`w-full py-3 px-4 font-bold rounded-lg shadow-md text-white transition-all focus:outline-none focus:ring-2 focus:ring-green-500 ${
                   isLoading
                     ? "bg-green-500/70 cursor-not-allowed"
@@ -110,11 +157,11 @@ const email = localStorage.getItem("resetEmail");
 
           <div className="px-6 sm:px-8 py-4 bg-gray-800/80 text-center border-t border-white/10">
             <Link
-              to="/auth/forgot-password"
+              to={otpMode === "register" ? "/auth/register" : "/auth/forgot-password"}
               className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-all"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to Email Entry
+              Back to {otpMode === "register" ? "Registration" : "Email Entry"}
             </Link>
           </div>
         </motion.div>

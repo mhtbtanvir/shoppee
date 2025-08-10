@@ -5,9 +5,13 @@ import { Link } from "react-router-dom";
 import { CheckCircle } from "lucide-react"; // import tick icon
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+// Redux imports
+import { useDispatch } from "react-redux";
+import { setResetEmail, setOtpMode } from "../../store/auth-slice"; // Adjust path as needed
 
 const Register = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -18,14 +22,13 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Handle redirect countdown
   useEffect(() => {
     if (success) {
       const timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev === 1) {
             clearInterval(timer);
-            navigate("/auth/login");
+            navigate("/auth/otp");
             return 0;
           }
           return prev - 1;
@@ -49,7 +52,7 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/register", {
+      const res = await fetch("http://localhost:5000/api/auth/register/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -59,6 +62,10 @@ const Register = () => {
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.message || "Failed to register");
+
+      // Dispatch email and otpMode to Redux here
+      dispatch(setResetEmail(email));
+      dispatch(setOtpMode("register"));
 
       setSuccess(true);
       setName("");
@@ -71,6 +78,7 @@ const Register = () => {
       setIsLoading(false);
     }
   };
+
 
   return (
     <div className="w-full px-4 sm:px-6 md:px-8 lg:px-0 flex justify-center items-center min-h-screen">
@@ -109,15 +117,9 @@ const Register = () => {
               <div className="flex flex-col items-center justify-center gap-2 mb-4 text-green-400 font-semibold">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-6 h-6" />
-                  <span>Registration Complete!</span>
+                  <span>One more step to complete your Registration!</span>
                 </div>
-                <p className="text-sm text-gray-400">
-                   now you can{" "} 
-                  <Link to="/auth/login" className="text-bold ">
-                    log in
-                  </Link>
-                  .
-                </p>
+                
               </div>
             )}
 
@@ -192,10 +194,10 @@ const Register = () => {
               </motion.button>
             </form>
                {success && (
-          <p className="text-sm text-gray-400 p-2">
-            Registration successful! Redirecting to login in {countdown} second
-            {countdown !== 1 ? "s" : ""}...
-          </p>
+              <p className="text-center text-sm text-gray-300 p-3 bg-gray-800 rounded-md shadow-inner select-none">
+                  🔔 Please wait! OTP has been sent to your email. Redirecting to verification page in <span className="font-semibold">{countdown}</span> second{countdown !== 1 ? "s" : ""}...
+              </p>
+
         )}
           </div>
 

@@ -1,20 +1,56 @@
 import { motion } from "framer-motion";
 import { Lock, Loader, ArrowLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { selectAuth, clearOtpData } from "../../store/auth-slice/index"; // adjust path if needed
 
 const RecreatePassword = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { email, otp } = useSelector(selectAuth);
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const email = localStorage.getItem("resetEmail");
-  const otp = localStorage.getItem("resetOTP");
-    
- 
+  const [success, setSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [countdown, setCountdown] = useState(5);
+  // Redirect if email or otp missing in Redux store
+  // useEffect(() => {
+  //   if (!email || !otp) {
+  //     navigate("/auth/forgot-password");
+  //   }
+  // }, [email, otp, navigate]);
+
+  // Clear OTP data when component unmounts
+  useEffect(() => {
+    return () => {
+      dispatch(clearOtpData());
+    };
+  }, [dispatch]);
+
+  // Redirect after success countdown
+  useEffect(() => {
+    if (success) {
+      const timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            navigate("/auth/login"); // redirect after reset
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    } else {
+      setCountdown(5);
+    }
+  }, [success, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,14 +64,12 @@ const RecreatePassword = () => {
       setError("Password must be at least 6 characters long!");
       return;
     }
+
     setIsLoading(true);
     setError(null);
-    //  const randtoken = crypto.getRandomValues(new Uint8Array(16))
-    //   .reduce((acc, byte) => acc + byte.toString(16).padStart(2, "0"), "");
 
-    
     try {
-      const res = await fetch("http://localhost:5000/api/auth/recreate-password", {
+      const res = await fetch("http://localhost:5000/api/auth/recreate-password/reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, newPassword: password, otp }),
@@ -45,12 +79,14 @@ const RecreatePassword = () => {
 
       if (!res.ok) throw new Error(data.message || "Failed to reset password");
 
-      setSuccess("Password reset successful! Redirecting to login...");
-      localStorage.removeItem("resetEmail");
-      localStorage.removeItem("resetOTP");
-      setTimeout(() => {
-        navigate("/auth/login");
-      }, 3000);
+     
+      setSuccess(true);
+      setSuccessMessage(data.message || "Password reset successfully!");
+      dispatch(clearOtpData());
+
+      // setTimeout(() => {
+      //   navigate("/auth/login");
+      // }, 3000);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -85,18 +121,19 @@ const RecreatePassword = () => {
             </div>
 
             <form className="space-y-5" onSubmit={handleSubmit}>
+              {/* Email field readonly */}
               <div className="relative">
                 <input
-                  
-                  placeholder={email}
-                  required
-                  value={email}
-                  // onChange={(e) => setEmail(e.target.value)}
+                  type="email"
+                  placeholder="Email"
+                  value={email || ""}
+                  readOnly
                   className="w-full pl-4 pr-4 py-3 rounded-lg bg-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white transition-all"
                   autoComplete="email"
                 />
               </div>
 
+              {/* New password */}
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
@@ -110,6 +147,7 @@ const RecreatePassword = () => {
                 />
               </div>
 
+              {/* Confirm password */}
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
@@ -128,7 +166,9 @@ const RecreatePassword = () => {
               )}
 
               {success && (
-                <p className="text-green-500 font-medium text-sm text-center">{success}</p>
+                <p className="text-green-500 font-medium text-sm text-center">
+            {successMessage} Redirecting to Log In page in {countdown} second{countdown !== 1 ? "s" : ""}...
+                  </p>
               )}
 
               <motion.button
