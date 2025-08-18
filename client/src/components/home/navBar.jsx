@@ -112,10 +112,10 @@ const Navbar = () => {
           {/* Categories Button */}
           <button
             onClick={toggleDesktopMenu}
-            className="ml-5 flex h-full w-40 items-center justify-center bg-amber-400 cursor-pointer"
+            className="ml-5 rounded-sm border-2 border-white border-y-0 flex h-full w-40 items-center justify-center gap-2 bg-amber-400 cursor-pointer"
           >
             <RxHamburgerMenu className="mx-1 w-6 h-6" />
-            All Categories
+            Categories
           </button>
 
           {/* Nav Links */}
@@ -134,7 +134,7 @@ const Navbar = () => {
           {/* Auth Links */}
           <div className="ml-auto flex gap-4 px-5">
             <a
-              href="/auth/login.jsx/"
+              href="/auth/login"
               className="font-light text-white hover:text-yellow-400 hover:underline duration-100"
             >
               Login

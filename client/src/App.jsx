@@ -5,9 +5,9 @@ import Register from "./pages/auth/register";
 import ForgotPassword from "./pages/auth/forgotPassword";
 import OTP from "./pages/auth/otp";
 import RecreatePassword from "./pages/auth/recreatePassword";
-import HomeLayout from "./components/home/HomeLayout";
+import HomeLayout from "./components/home/homeLayout";
  // optional wrapper for HomePage
-import HomePage from "./pages/homePage";
+import HomePage from "./pages/homepage/homePage";
 
 function App() {
   return (
@@ -23,8 +23,8 @@ function App() {
 
       {/* Home routes */}
       <Route path="/" element={<HomeLayout />}>
-        <Route index element={<HomePage />} />
-        {/* Add more routes here if needed */}
+        <Route path="homepage" element={<HomePage />} />
+        {/* Add more routes here when needed  */}
       </Route>
 
       {/* Optional: 404 */}

@@ -31,7 +31,7 @@ const Login = () => {
       if (!res.ok) throw new Error(data.message || "Failed to login");
 
       // On success, redirect to /homePage
-      navigate("/");
+      navigate("/homepage");
     } catch (err) {
       setError(err.message);
     } finally {

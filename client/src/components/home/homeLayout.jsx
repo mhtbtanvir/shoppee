@@ -1,25 +1,28 @@
-// components/home/HomeLayout.jsx
 "use client";
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Header from "../header";
-import Navbar from "../navbar";
-import Footer from "../footer";
+import Header from "./header";
+import Navbar from "./navBar";
+import Footer from "./footer";
 
 const HomeLayout = () => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen rounded-md">
       {/* Header and Navbar always visible */}
-      <Header />
-      <Navbar />
+      <header>
+        <Header />
+        <Navbar />
+      </header>
 
       {/* Page content */}
-      <main className="flex-1 container mx-auto max-w-7xl px-4">
+      <main className="flex-1 container mx-auto max-w-7xl">
         <Outlet />
       </main>
 
       {/* Footer */}
-      <Footer />
+      <footer>
+        <Footer />
+      </footer>
     </div>
   );
 };

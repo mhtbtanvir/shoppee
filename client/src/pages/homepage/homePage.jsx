@@ -1,14 +1,16 @@
 // pages/homePage.jsx
 import React from "react";
-import HeroSection from "../components/herosection";
-import Categories from "../components/categories";
-import FeaturedProducts from "../components/featuredProducts";
-import Testimonials from "../components/testimonials";
-import Newsletter from "../components/newsletter";
+import HeroSection from "../../components/home/heroSection";
+import Categories from "../../components/home/categories";
+import FeaturedProducts from "../../components/home/featuredProducts";
+import Testimonials from "../../components/home/testimonials";
+import Newsletter from "../../components/home/newsletter";
 
 const HomePage = () => {
   return (
     <>
+   
+
       <section id="home">
         <HeroSection />
       </section>

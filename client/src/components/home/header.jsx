@@ -34,40 +34,49 @@ const Header = () => {
   ];
 
   return (
-    <div>
+    <div >
     <header className="w-full bg-white shadow sticky top-0 z-50">
-  <div className="mx-auto flex h-16 max-w-[2400px] items-center justify-between px-5">
-    {/* Logo */}
-    <a href="index.html" className="w-24">
-      <img
-        className="cursor-pointer sm:h-auto sm:w-auto"
-        src="https://i.imgur.com/520zDfd.png"
-        alt="company logo"
-      />
+        <div className="mx-auto flex h-16 max-w-[2400px] items-center justify-between px-8">
+            {/* Logo */}
+            <a href="/" className="w-24">
+            <img
+                className="cursor-pointer sm:h-auto sm:w-auto"
+                src="https://i.imgur.com/520zDfd.png"
+                alt="logo"
+            />
     </a>
 
     {/* Hamburger (mobile) */}
+    {/* Hamburger (mobile) */}
     <div className="md:hidden">
-      <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-        <RxHamburgerMenu className="w-8 h-8" />
-      </button>
+    <button
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        className="bg-white border-2 border-black p-2 rounded-md hover:bg-gray-100 transition"
+    >
+        <RxHamburgerMenu className="w-6 h-6 text-black" />
+    </button>
     </div>
 
+
     {/* Search (desktop) */}
-    <form className="hidden h-9 w-2/5 items-center border md:flex">
+    <form className="bg-gray-200 rounded-xl hidden h-9 
+    w-2/5 items-center
+     border md:flex">
       <CiSearch className="mx-3 h-4 w-4" />
       <input
-        className="w-11/12 outline-none placeholder-gray-400"
+        className="w-11/12 outline-none bg-gray-200"
         type="search"
         placeholder="Search"
       />
-      <button className="ml-auto h-full items-center bg-amber-400 px-4 hover:bg-yellow-300">
+      <button className="ml-auto py-1 text-white h-full items-center
+       bg-gray-500 px-4 
+       rounded-l-none rounded-r-xl">
         Search
       </button>
     </form>
 
     {/* Icons (desktop) */}
-    <div className="hidden gap-3 md:!flex">
+    <div className="hidden gap-3 md:!flex ">
       {iconLinks.map((link, index) => (
         <a
           key={index}
@@ -87,7 +96,7 @@ const Header = () => {
   <section className="md:hidden absolute left-0 right-0 z-50 h-screen w-full bg-white">
     <div className="mx-auto">
       {/* Icons */}
-      <div className="mx-auto flex w-full justify-center gap-3 py-4">
+      <div className="mx-auto flex w-full justify-center gap-3 py-4 ">
         {iconLinks.map((link, index) => (
           <a
             key={index}
@@ -101,16 +110,16 @@ const Header = () => {
       </div>
 
       {/* Search (mobile) */}
-      <form className="my-4 mx-5 flex h-9 items-center border">
+      <form className="bg-gray-200 my-4 mx-5 flex h-9 items-center border-2 rounded-xl">
         <CiSearch className="mx-3 h-4 w-4" />
         <input
-          className="w-11/12 outline-none placeholder-white"
+          className="w-11/12 outline-none  bg-gray-200 "
           type="search"
           placeholder="Search"
         />
         <button
           type="submit"
-          className="ml-auto h-full  px-4 hover:bg-yellow-300"
+          className="ml-auto py-1 text-white h-full items-center bg-gray-500 px-4 rounded-l-none rounded-r-xl"
         >
           Search
         </button>
