@@ -5,7 +5,8 @@ import Categories from "../../components/home/categories";
 import FeaturedProducts from "../../components/home/featuredProducts";
 import Testimonials from "../../components/home/testimonials";
 import Newsletter from "../../components/home/newsletter";
-
+import FeaturedStories from "../../components/home/feturedStories";
+import Deals from "../../components/home/deals";
 const HomePage = () => {
   return (
     <>
@@ -24,7 +25,11 @@ const HomePage = () => {
       </section>
 
       <section id="deals">
-        {/* Optional Deals component */}
+        <Deals />
+      </section>
+
+      <section id="stories">
+        <FeaturedStories />
       </section>
 
       <section id="contact">

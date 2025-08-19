@@ -107,14 +107,14 @@ const Navbar = () => {
   return (
     <>
       {/* NAVBAR */}
-        <nav className="hidden md:block bg-violet-900 mx-6 px-2 rounded-md relative shadow-[-2px_-4px_8px_-1px_rgba(139,92,246,0.5)]">        
+        <nav className="hidden md:block bg-gray-500 mx-6 px-2  relative rounded-lg shadow-[-2px_-4px_8px_-1px_rgba(139,92,246,0.5)]">        
         <div className="mx-auto  -my-4 flex h-12 max-w-[1200px] items-center">
           {/* Categories Button */}
           <button
             onClick={toggleDesktopMenu}
-            className="ml-5 rounded-sm border-2 border-white border-y-0 flex h-full w-40 items-center justify-center gap-2 bg-amber-400 cursor-pointer"
+            className="ml-5 rounded-sm border-2 border-white  text-white border-y-0 flex h-full w-40 items-center justify-center gap-2 bg-black cursor-pointer"
           >
-            <RxHamburgerMenu className="mx-1 w-6 h-6" />
+            <RxHamburgerMenu className="mx-1 w-6 h-6 text-white" />
             Categories
           </button>
 
@@ -141,7 +141,7 @@ const Navbar = () => {
             </a>
             <span className="text-white">|</span>
             <a
-              href="/auth"
+              href="/auth/register"
               className="font-light text-white hover:text-yellow-400 hover:underline duration-100"
             >
               Sign Up
@@ -162,7 +162,7 @@ const Navbar = () => {
                     key={index}
                     className={`flex items-center gap-2 py-2 px-3 cursor-pointer hover:bg-neutral-100 ${
                       selectedCategory === category.category
-                        ? "bg-amber-400"
+                        ? "bg-gray-400"
                         : ""
                     }`}
                     onClick={() =>

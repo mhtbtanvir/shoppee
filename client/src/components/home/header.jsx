@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { CiHeart, CiSearch, CiUser } from "react-icons/ci";
 import { IoBagHandleSharp } from "react-icons/io5";
 import { RxHamburgerMenu } from "react-icons/rx";
-
+import logo from '../../assets/logo2.png'
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -38,13 +38,19 @@ const Header = () => {
     <header className="w-full bg-white shadow-sm shadow-gray-400 top-0 z-10">
         <div className="mx-auto  flex h-24 max-w-[2400px] items-center justify-between px-8">
             {/* Logo */}
-            <a href="/" className="w-24">
+          <a href="/" className="w-16 flex">
+            <img
+                className="cursor-pointer sm:h-auto sm:w-auto"
+                src={logo}
+                alt="logo2"
+            />
             <img
                 className="cursor-pointer sm:h-auto sm:w-auto"
                 src="https://i.imgur.com/520zDfd.png"
                 alt="logo"
             />
-    </a>
+
+          </a>
 
     {/* Hamburger (mobile) */}
     {/* Hamburger (mobile) */}
