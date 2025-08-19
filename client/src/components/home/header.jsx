@@ -34,9 +34,9 @@ const Header = () => {
   ];
 
   return (
-    <div >
-    <header className="w-full bg-white shadow sticky top-0 z-50">
-        <div className="mx-auto flex h-16 max-w-[2400px] items-center justify-between px-8">
+    <div className="w-full -mt-3" >
+    <header className="w-full bg-white shadow-sm shadow-gray-400 top-0 z-10">
+        <div className="mx-auto  flex h-24 max-w-[2400px] items-center justify-between px-8">
             {/* Logo */}
             <a href="/" className="w-24">
             <img

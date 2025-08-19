@@ -10,12 +10,15 @@ const HomeLayout = () => {
     <div className="flex flex-col min-h-screen rounded-md">
       {/* Header and Navbar always visible */}
       <header>
-        <Header />
+        <div className = "relative">
+         <Header />
         <Navbar />
+        </div>
+       
       </header>
 
       {/* Page content */}
-      <main className="flex-1 container mx-auto max-w-7xl">
+      <main className="flex-1">
         <Outlet />
       </main>
 

@@ -15,8 +15,8 @@ const Navbar = () => {
   const navItems = [
     { label: "Home", href: "#" },
     { label: "Catalog", href: "#" },
-    { label: "About Us", href: "#" },
-    { label: "Contact Us", href: "#" },
+    { label: "About ", href: "#" },
+    { label: "Contact ", href: "#" },
   ];
 
   const categories = [
@@ -107,8 +107,8 @@ const Navbar = () => {
   return (
     <>
       {/* NAVBAR */}
-      <nav className="hidden md:block w-full bg-violet-900 relative">
-        <div className="mx-auto flex h-12 max-w-[1200px] items-center">
+        <nav className="hidden md:block bg-violet-900 mx-6 px-2 rounded-md relative shadow-[-2px_-4px_8px_-1px_rgba(139,92,246,0.5)]">        
+        <div className="mx-auto  -my-4 flex h-12 max-w-[1200px] items-center">
           {/* Categories Button */}
           <button
             onClick={toggleDesktopMenu}
@@ -152,7 +152,7 @@ const Navbar = () => {
 
       {/* DROPDOWN MENU */}
       {desktopMenuOpen && (
-        <section className="relative left-0 right-0 z-10 w-full border bg-white">
+        <section className=" left-0 right-0 shadow-md  z-10 w-full border bg-white">
           <div className="hidden mx-auto md:flex max-w-[1200px] py-10 relative">
             {/* Categories List */}
             <div className="w-[300px] border-r">
