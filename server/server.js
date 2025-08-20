@@ -13,6 +13,10 @@ connectDB();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const path = require('path');
+
+// Serve uploaded images
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // --- Security & Logging ---
 app.use(helmet()); // basic security headers

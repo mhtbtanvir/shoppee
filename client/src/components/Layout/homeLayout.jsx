@@ -18,7 +18,7 @@ const HomeLayout = () => {
       </header>
 
       {/* Page content */}
-      <main className="flex-1">
+      <main className="flex-1 ">
         <Outlet />
       </main>
 

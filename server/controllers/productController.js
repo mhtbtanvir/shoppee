@@ -1,10 +1,20 @@
 const Product = require("../models/Product");
 
+// Helper to map uploaded files to URLs
+
+
+const mapImagesToUrls = (files) => {
+  if (!files || files.length === 0) return [];
+  return files.map(file => `/uploads/${file.filename}`);
+};
+
 // @desc   Create a new product
-// @route  POST /api/products
+// @route  POST /api/admin/products
 // @access Admin
 exports.createProductAdmin = async (req, res) => {
   try {
+    console.log('Body:', req.body);
+console.log('Files:', req.files);
     if (!req.body) throw new Error("Form data missing");
 
     const productData = {
@@ -15,7 +25,7 @@ exports.createProductAdmin = async (req, res) => {
       brand: req.body.brand || "",
       stock: req.body.stock || 0,
       isFeatured: req.body.isFeatured || false,
-      images: req.files ? req.files.map((file) => file.path) : [], // optional
+      images: mapImagesToUrls(req.files),
     };
 
     const product = await Product.create(productData);
@@ -30,6 +40,7 @@ exports.createProductAdmin = async (req, res) => {
 // @access Public
 exports.getProducts = async (req, res) => {
   try {
+    
     const products = await Product.find();
     res.status(200).json({ success: true, count: products.length, products });
   } catch (error) {
@@ -44,7 +55,6 @@ exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).json({ success: false, message: "Product not found" });
-
     res.status(200).json({ success: true, product });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -52,17 +62,17 @@ exports.getProductById = async (req, res) => {
 };
 
 // @desc   Update a product
-// @route  PUT /api/products/:id
+// @route  PUT /api/admin/products/:id
 // @access Admin
 exports.updateProductAdmin = async (req, res) => {
   try {
     const updateData = {
       ...req.body,
-      images: req.files && req.files.length > 0 ? req.files.map((f) => f.path) : undefined,
+      images: req.files && req.files.length > 0 ? mapImagesToUrls(req.files) : undefined,
     };
 
-    // Remove undefined fields so existing images aren't overwritten
-    Object.keys(updateData).forEach((key) => updateData[key] === undefined && delete updateData[key]);
+    // Remove undefined fields to avoid overwriting existing images
+    Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
 
     const product = await Product.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
@@ -70,7 +80,6 @@ exports.updateProductAdmin = async (req, res) => {
     });
 
     if (!product) return res.status(404).json({ success: false, message: "Product not found" });
-
     res.status(200).json({ success: true, product });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
@@ -78,13 +87,12 @@ exports.updateProductAdmin = async (req, res) => {
 };
 
 // @desc   Delete a product
-// @route  DELETE /api/products/:id
+// @route  DELETE /api/admin/products/:id
 // @access Admin
 exports.deleteProductAdmin = async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
     if (!product) return res.status(404).json({ success: false, message: "Product not found" });
-
     res.status(200).json({ success: true, message: "Product deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

@@ -44,11 +44,11 @@ const Header = () => {
                 src={logo}
                 alt="logo2"
             />
-            <img
+            {/* <img
                 className="cursor-pointer sm:h-auto sm:w-auto"
                 src="https://i.imgur.com/520zDfd.png"
                 alt="logo"
-            />
+            /> */}
 
           </a>
 
@@ -67,14 +67,14 @@ const Header = () => {
     {/* Search (desktop) */}
     <form className="bg-gray-200 rounded-xl hidden h-9 
     w-2/5 items-center
-     border md:flex">
+     border md:flex ">
       <CiSearch className="mx-3 h-4 w-4" />
       <input
         className="w-11/12 outline-none bg-gray-200"
         type="search"
         placeholder="Search"
       />
-      <button className="ml-auto py-1 text-white h-full items-center
+      <button className="ml-auto flex-1 py-1 text-white h-full items-center
        bg-gray-500 px-4 
        rounded-l-none rounded-r-xl">
         Search
