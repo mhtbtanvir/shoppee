@@ -1,4 +1,8 @@
+// server/routes/authRoutes.js
 const express = require('express');
+const router = express.Router();
+const asyncHandler = require('../middleware/asyncHandler');
+
 const {
   sendRegistrationOTP,
   createUser,
@@ -8,18 +12,16 @@ const {
   resetPassword,
 } = require('../controllers/authController');
 
-const router = express.Router();
-
 // Registration with OTP
-router.post('/register/send-otp', sendRegistrationOTP);
-router.post('/register/verify-otp', createUser);
+router.post('/register/send-otp', asyncHandler(sendRegistrationOTP));
+router.post('/register/verify-otp', asyncHandler(createUser));
 
 // Login
-router.post('/login', loginUser);
+router.post('/login', asyncHandler(loginUser));
 
 // Password reset with OTP
-router.post('/forgot-password/send-otp', sendResetOTP);
-router.post('/forgot-password/verify-otp', verifyResetOTP);
-router.post('/recreate-password/reset', resetPassword);
+router.post('/forgot-password/send-otp', asyncHandler(sendResetOTP));
+router.post('/forgot-password/verify-otp', asyncHandler(verifyResetOTP));
+router.post('/recreate-password/reset', asyncHandler(resetPassword));
 
 module.exports = router;

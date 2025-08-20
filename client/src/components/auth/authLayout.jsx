@@ -1,8 +1,8 @@
 import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import heroBg from '../../assets/bg-hero.jpg';
-import Header from '../home/header';
-import Navbar from '../home/navBar';
+import Header from '../Layout/header';
+import Navbar from '../Layout/navBar';
 
 const AuthLayout = () => {
   return (

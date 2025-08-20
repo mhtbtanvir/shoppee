@@ -1,46 +1,61 @@
+// server.js
 const express = require('express');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
 
 dotenv.config();
-
 connectDB();
-
-
-
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-
-app.use(cors({
-    origin: "http://localhost:5173",
-    methods: ['GET', 'POST', 'DELETE', 'PUT'],
-    allowedHeaders: 
-        [
-        "Content-Type", 
-        "Authorization", 
-        "Cache-Control", 
-        "Expires", 
-        "Pragma"
-        ],
-    credentials: true
-}));
-
+// --- Security & Logging ---
+app.use(helmet()); // basic security headers
+app.use(morgan('dev')); // request logging
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(cookieParser());
 
-// app.use('/api/auth', (req, res, next) => {
-//   console.log('Headers:', req.headers);
-//   console.log('Body:', req.body);
-//   next();
-// });
+// --- Rate Limiting ---
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // max requests per IP
+  message: 'Too many requests from this IP, please try again later.',
+});
+app.use(limiter);
 
+// --- CORS Configuration ---
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Expires', 'Pragma'],
+}));
+
+// --- Routes ---
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/products', require('./routes/productRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
 
+// --- Health Check ---
+app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
-app.listen(PORT,()=>
-    console.log(`Server is running on port ${PORT}`)
-);
+// --- Global Error Handler ---
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.statusCode || 500).json({
+    success: false,
+    message: err.message || 'Server Error',
+  });
+});
+
+// --- Start Server ---
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
