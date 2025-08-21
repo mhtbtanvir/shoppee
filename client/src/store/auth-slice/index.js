@@ -73,3 +73,4 @@ export const {
 export default authSlice.reducer;
 
 export const selectAuth = (state) => state.auth;
+export const selectCurrentUserId = (state) => state.auth.user?._id;

@@ -17,7 +17,7 @@ const Header = () => {
 
   const iconLinks = [
     {
-      href: "wishlist.html",
+      href: "/wishlist",
       icon: <CiHeart className="h-6 w-6" />,
       text: "Wishlist",
     },

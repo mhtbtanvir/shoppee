@@ -15,7 +15,7 @@ const Navbar = () => {
   const [defaultCategory] = useState("Bedroom");
 
 const navItems = [
-  { label: "Home", href: "/" },
+  { label: "Home", href: "/homepage" },
   { label: "Catalog", href: "/products" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },

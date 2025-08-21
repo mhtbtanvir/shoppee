@@ -8,7 +8,7 @@ import RecreatePassword from "./pages/auth/recreatePassword";
 import HomeLayout from "./components/Layout/homeLayout";
 import HomePage from "./pages/homepage/homePage";
 import Product from "./pages/Products/product";
-
+import WishList from "./pages/Products/wishList";
 // Admin panel
 import AdminLayout from "./components/Layout/adminLayout.jsx";
 import AdminDashboard from "./pages/admin/dashboard.jsx";
@@ -34,10 +34,11 @@ function App() {
       </Route>
 
       {/* Home routes */}
-      <Route path="/" element={<HomeLayout />}>
-        <Route path="homepage" element={<HomePage />} />
-        <Route path="products" element={<Product />} />
-      </Route>
+     <Route path="/" element={<HomeLayout />}>
+  <Route path="homepage" element={<HomePage />} />
+  <Route path="products" element={<Product />} />
+  <Route path="wishlist" element={<WishList />} /> {/* added */}
+</Route>
 
       {/* Admin routes */}
       <Route

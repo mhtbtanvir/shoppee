@@ -1,7 +1,10 @@
 const Product = require("../models/Product");
-
+const asyncHandler = require("../middleware/asyncHandler");
+const mongoose = require("mongoose");
 // Helper to map uploaded files to URLs
 
+const testUserId = "6898b98957c39b12c1c82c8c";
+console.log("Is valid ObjectId?", mongoose.Types.ObjectId.isValid(testUserId));
 
 const mapImagesToUrls = (files) => {
   if (!files || files.length === 0) return [];
@@ -122,3 +125,49 @@ exports.getProductsByCategory = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+// -------------------- Wishlist --------------------
+exports.getWishlist = asyncHandler(async (req, res) => {
+  const userId = req.user?._id;
+  if (!userId) return res.status(401).json({ success: false, message: "Not authorized" });
+
+  try {
+    const likedProducts = await Product.find({ likedBy: mongoose.Types.ObjectId(userId) }).lean();
+    const normalized = likedProducts.map(normalizeProduct);
+    res.json({ success: true, products: normalized });
+  } catch (err) {
+    console.error("Error fetching wishlist:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// -------------------- Toggle Like --------------------
+exports.toggleLike = asyncHandler(async (req, res) => {
+  if (!req.user?._id) return res.status(401).json({ success: false, message: "User not authorized" });
+
+  const productId = req.params.id;
+  if (!mongoose.Types.ObjectId.isValid(productId)) return res.status(400).json({ success: false, message: "Invalid product ID" });
+
+  const product = await Product.findById(productId);
+  if (!product) return res.status(404).json({ success: false, message: "Product not found" });
+
+  const userId = req.user._id.toString();
+  const likedByIds = product.likedBy.map((id) => id.toString());
+
+  if (likedByIds.includes(userId)) {
+    product.likedBy = product.likedBy.filter((id) => id.toString() !== userId);
+    product.like = Math.max((product.like || 1) - 1, 0);
+  } else {
+    product.likedBy.push(req.user._id);
+    product.like = (product.like || 0) + 1;
+  }
+
+  await product.save();
+  res.json({ success: true, product: normalizeProduct(product) });
+});
+
+// -------------------- Helper --------------------
+const normalizeProduct = (product) => ({
+  ...product,
+  _id: product._id.toString(),
+  likedBy: product.likedBy.map((id) => id.toString()),
+});

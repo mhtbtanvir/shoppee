@@ -1,23 +1,15 @@
-// src/pages/Product.jsx
+// src/pages/Wishlist.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
 import ProductCard from "@/components/product/ProductCard";
-import Filter from "@/components/product/Filter";
 
-const Product = () => {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const categoryFromQuery = queryParams.get("category");
-
+const Wishlist = () => {
   const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [liked, setLiked] = useState({}); // key: productId, value: true/false
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
-  const [liked, setLiked] = useState({}); // key: productId, value: true/false
 
-  // Fetch products on mount or when category changes
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
@@ -27,6 +19,7 @@ const Product = () => {
         });
 
         const normalizedProducts = (res.data.products || []).map((product) => {
+          // Fix broken images
           const images =
             Array.isArray(product.images) && product.images.length > 0
               ? product.images.map((img) => ({
@@ -37,31 +30,17 @@ const Product = () => {
                 }))
               : [];
 
-          const discountPrice =
-            product.discount > 0
-              ? (product.price * (100 - product.discount)) / 100
-              : product.price;
-
           return {
             ...product,
             images,
-            discountPrice,
-            ratings: product.ratings || { average: 0, count: 0 },
             likedBy: product.likedBy?.map(String) || [],
+            ratings: product.ratings || { average: 0, count: 0 },
           };
         });
 
         setProducts(normalizedProducts);
 
-        const initialFiltered = categoryFromQuery
-          ? normalizedProducts.filter(
-              (p) => p.category?.toLowerCase() === categoryFromQuery.toLowerCase()
-            )
-          : normalizedProducts;
-
-        setFilteredProducts(initialFiltered);
-
-        // Optionally get current user ID
+        // Get current user ID from first likedBy array (or auth)
         const userId =
           normalizedProducts.flatMap((p) => p.likedBy).find(Boolean) || null;
         setCurrentUserId(userId);
@@ -73,17 +52,17 @@ const Product = () => {
         });
         setLiked(likedState);
       } catch (err) {
-        console.error("Error fetching products:", err);
-        setError("Failed to fetch products from server");
+        console.error(err);
+        setError("Failed to fetch products");
       } finally {
         setLoading(false);
       }
     };
 
     fetchProducts();
-  }, [categoryFromQuery]);
+  }, []);
 
-  // Handle like button click
+  // Handle like/unlike
   const handleLike = async (productId) => {
     if (!currentUserId) return;
 
@@ -94,71 +73,55 @@ const Product = () => {
         { withCredentials: true }
       );
 
-      // Update liked state with backend response
+      // Update liked state
       setLiked((prev) => ({
         ...prev,
         [productId]: data.product.likedBy.includes(currentUserId),
       }));
 
-      // Update filteredProducts to reflect new like count and likedBy
-      setFilteredProducts((prev) =>
+      // Update products array to reflect new like count
+      setProducts((prev) =>
         prev.map((p) =>
           p._id === productId
-            ? {
-                ...p,
-                likedBy: data.product.likedBy.map(String),
-                like: data.product.like,
-              }
+            ? { ...p, likedBy: data.product.likedBy.map(String), like: data.product.like }
             : p
         )
       );
     } catch (err) {
-      console.error("Error updating like:", err);
+      console.error(err);
     }
   };
 
+  // Filter only liked products
+  const likedProducts = products.filter((p) => liked[p._id]);
+
   return (
     <div className="m-6 border border-black shadow-lg p-6">
-      {/* Heading */}
-      <div className="text-center mb-6 border-b-2 border-black pb-4">
-        <h1 className="text-4xl font-bold text-gray-800">
-          {categoryFromQuery ? `${categoryFromQuery} Products` : "Our Products"}
-        </h1>
-      </div>
+      <h1 className="text-4xl font-bold text-gray-800 text-center mb-6">
+        Your Wishlist
+      </h1>
 
-      {/* Filter */}
-      <Filter
-        products={
-          categoryFromQuery
-            ? products.filter(
-                (p) => p.category?.toLowerCase() === categoryFromQuery.toLowerCase()
-              )
-            : products
-        }
-        initialCategory={categoryFromQuery || "All"}
-        onFilterChange={setFilteredProducts}
-      />
-
-      {/* Products Grid */}
       {loading ? (
         <p className="text-center text-gray-700 font-semibold">Loading...</p>
       ) : error ? (
         <p className="text-center text-red-600 font-bold">{error}</p>
-      ) : filteredProducts.length > 0 ? (
+      ) : likedProducts.length > 0 ? (
         <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {filteredProducts.map((product) => (
+          {likedProducts.map((product) => (
             <ProductCard
               key={product._id}
-              product={{ ...product, liked: liked[product._id] }}
+              product={{ ...product, liked: true }}
               onLike={handleLike}
             />
           ))}
         </div>
       ) : (
-        <p className="text-center text-gray-500">No products found</p>
+        <p className="text-center text-gray-500">
+          No products in your wishlist
+        </p>
       )}
     </div>
   );
 };
 
-export default Product;
+export default Wishlist;

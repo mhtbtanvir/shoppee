@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Loader, ShieldCheck, ArrowLeft } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
-import { selectAuth, setOtp } from "../../store/auth-slice/index"; // adjust path
+import { selectAuth, setOtp, loginSuccess } from "../../store/auth-slice"; // adjust path
 
 const OTP = () => {
   const navigate = useNavigate();
@@ -17,38 +17,34 @@ const OTP = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [countdown, setCountdown] = useState(5);
 
-
-  // Redirect if no otpMode forgot-password or register set in Redux
+  // Redirect if no otpMode
   useEffect(() => {
-    if (!otpMode) {
-      navigate("/auth");
-    }
+    if (!otpMode) navigate("/auth");
   }, [otpMode, navigate]);
 
-  // Auto redirect 5 seconds after success message appears
+  // Countdown redirect after success
   useEffect(() => {
-    
-    if (success) {
-      const countdownTimer = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-
-            clearInterval(countdownTimer);
-            if (otpMode === "register") {
-              navigate("/auth/login");
-            } else if (otpMode === "forgot-password") {
-              navigate("/auth/recreate-password");
-            }
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(countdownTimer);
-    } else {
-      setCountdown(5); // reset countdown if success becomes false
+    if (!success) {
+      setCountdown(5);
+      return;
     }
+
+    const countdownTimer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(countdownTimer);
+          if (otpMode === "register") {
+            navigate("/auth/login"); // after registration OTP success
+          } else if (otpMode === "forgot-password") {
+            navigate("/auth/recreate-password"); // after forgot-password OTP
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(countdownTimer);
   }, [success, otpMode, navigate]);
 
   const handleVerify = async (e) => {
@@ -74,7 +70,13 @@ const OTP = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "OTP verification failed");
 
-      dispatch(setOtp(otpInput)); // store OTP if needed
+      dispatch(setOtp(otpInput));
+
+      // ✅ Log user in after registration OTP success
+      if (otpMode === "register" && data.user) {
+        dispatch(loginSuccess(data.user));
+      }
+
       setSuccess(true);
       setSuccessMessage(data.message || "OTP verified successfully");
     } catch (err) {
