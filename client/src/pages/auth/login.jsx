@@ -2,11 +2,14 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Lock, Loader } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { loginSuccess, loginFailure } from "../../../src/store/auth-slice";
 
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  // States for form, loading, error
+  // Local states
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +25,7 @@ const Login = () => {
       const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // for cookies if backend sends any
+        credentials: "include", // if backend sends cookies
         body: JSON.stringify({ email, password }),
       });
 
@@ -30,10 +33,17 @@ const Login = () => {
 
       if (!res.ok) throw new Error(data.message || "Failed to login");
 
-      // On success, redirect to /homePage
+      // ✅ Check whether backend sends user inside { user } or directly
+      const userData = data.user || data;
+
+      // Save user in Redux
+      dispatch(loginSuccess(userData));
+
+      // Redirect
       navigate("/homepage");
     } catch (err) {
       setError(err.message);
+      dispatch(loginFailure(err.message));
     } finally {
       setIsLoading(false);
     }

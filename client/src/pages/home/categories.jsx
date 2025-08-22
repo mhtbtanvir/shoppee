@@ -55,20 +55,20 @@ const Categories = () => {
   return (
     
     <div className="container  mx-auto  px-4 py-5 ">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 font-prata tracking-tight text-center">
+        <h2 className="-mt-4 text-4xl md:text-5xl font-extrabold text-gray-900 font-prata tracking-tight text-center">
     Browse Categories
   </h2>
-  <p className="my-3 text-gray-600 text-lg max-w-xl mx-auto text-center">
+  <p className="my-8 pb-10 text-gray-600 text-lg max-w-xl mx-auto text-center">
     Discover our diverse collection of products, carefully curated to suit every taste and need.
   </p>
   
 
-      <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid  gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {Object.keys(categories).length > 0 ? (
           Object.values(categories).map((cat) => (
             <div
               key={cat.name}
-              className="relative border border-gray-300 shadow hover:shadow-lg transition-shadow duration-300 flex flex-col"
+              className="relative border  border-gray-800  shadow hover:shadow-lg transition-shadow duration-300 flex flex-col"
             >
               {/* Image */}
               <div className="relative w-full h-56 overflow-hidden">
@@ -97,7 +97,7 @@ const Categories = () => {
               </div>
 
               {/* Details */}
-              <div className="bg-gray-50 p-4 flex flex-col flex-1">
+              <div className="bg-gray-50 p-4 border-t border-gray-400 flex flex-col flex-1">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-2">
                   {cat.name}
                 </h2>

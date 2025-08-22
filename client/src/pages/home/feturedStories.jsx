@@ -52,7 +52,7 @@ const FeaturedStories = () => {
   return (
     <section
       aria-labelledby="featured-stories-heading"
-      className="relative w-full px-6 md:px-12 py-10 bg-gradient-to-b from-gray-50 via-white to-gray-100 overflow-hidden"
+      className="relative w-full px-6 md:px-12 py-4 bg-gradient-to-b from-gray-50 via-white to-gray-100 overflow-hidden"
     >
       {/* Decorative blurred shapes */}
       <div className="absolute -left-14 -top-10 w-56 h-56 bg-pink-500/20 rounded-full blur-3xl -z-10" />
@@ -72,7 +72,7 @@ const FeaturedStories = () => {
         >
           Featured Stories
         </h2>
-        <p className="mt-3 text-gray-600 text-lg max-w-2xl mx-auto">
+        <p className="mt-6 text-gray-600 text-lg max-w-2xl mx-auto">
           Insights, tips, and inspiration — curated for our fashion-forward community.
         </p>
       </motion.header>

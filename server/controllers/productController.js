@@ -2,9 +2,8 @@ const Product = require("../models/Product");
 const asyncHandler = require("../middleware/asyncHandler");
 const mongoose = require("mongoose");
 // Helper to map uploaded files to URLs
+// -------------------- Toggle Like --------------------
 
-const testUserId = "6898b98957c39b12c1c82c8c";
-console.log("Is valid ObjectId?", mongoose.Types.ObjectId.isValid(testUserId));
 
 const mapImagesToUrls = (files) => {
   if (!files || files.length === 0) return [];
@@ -126,48 +125,114 @@ exports.getProductsByCategory = async (req, res) => {
   }
 };
 // -------------------- Wishlist --------------------
+// -------------------- Wishlist --------------------
 exports.getWishlist = asyncHandler(async (req, res) => {
-  const userId = req.user?._id;
-  if (!userId) return res.status(401).json({ success: false, message: "Not authorized" });
+  const userEmail = req.user?.email;
+  if (!userEmail) {
+    return res.status(401).json({ success: false, message: "Not authorized" });
+  }
 
   try {
-    const likedProducts = await Product.find({ likedBy: mongoose.Types.ObjectId(userId) }).lean();
-    const normalized = likedProducts.map(normalizeProduct);
-    res.json({ success: true, products: normalized });
+    // Fetch only products liked by this user
+    const likedProducts = await Product.find({ likedBy: userEmail }).lean();
+
+    // Normalize products
+    const normalized = likedProducts.map(product => ({
+      ...product,
+      _id: product._id.toString(),
+      likedBy: (product.likedBy || []).map(String),
+    }));
+
+    res.json({
+      success: true,
+      userEmail,
+      products: normalized,
+    });
   } catch (err) {
     console.error("Error fetching wishlist:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 });
 
+const normalizeProduct = (product) => ({
+  ...product.toObject(), // convert Mongoose doc to plain JS object
+  _id: product._id.toString(),
+  likedBy: product.likedBy.map(String), // ensure emails are strings
+});
+
 // -------------------- Toggle Like --------------------
 exports.toggleLike = asyncHandler(async (req, res) => {
-  if (!req.user?._id) return res.status(401).json({ success: false, message: "User not authorized" });
+  if (!req.user?.email) {
+    return res.status(401).json({ success: false, message: "User not authorized" });
+  }
 
   const productId = req.params.id;
-  if (!mongoose.Types.ObjectId.isValid(productId)) return res.status(400).json({ success: false, message: "Invalid product ID" });
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json({ success: false, message: "Invalid product ID" });
+  }
+
+  const product = await Product.findById(productId);
+  if (!product) {
+    return res.status(404).json({ success: false, message: "Product not found" });
+  }
+
+  const userEmail = req.user.email;
+
+  if (!Array.isArray(product.likedBy)) product.likedBy = [];
+
+  if (product.likedBy.includes(userEmail)) {
+    // Unlike
+    product.likedBy = product.likedBy.filter((email) => email !== userEmail);
+    product.like = Math.max((product.like || 1) - 1, 0);
+    product.likedByCurrentUser = false;
+  } else {
+    // Like
+    product.likedBy.push(userEmail);
+    product.like = (product.like || 0) + 1;
+    product.likedByCurrentUser = true;
+  }
+
+  await product.save();
+
+  // send back the updated product
+  res.json({ success: true, product });
+});
+// -------------------- Add Review --------------------
+exports.addReview = asyncHandler(async (req, res) => {
+  const { comment, rating } = req.body;
+  const productId = req.params.id;
+
+  if (!req.user?.email) {
+    return res.status(401).json({ success: false, message: "Not authorized" });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json({ success: false, message: "Invalid product ID" });
+  }
 
   const product = await Product.findById(productId);
   if (!product) return res.status(404).json({ success: false, message: "Product not found" });
 
-  const userId = req.user._id.toString();
-  const likedByIds = product.likedBy.map((id) => id.toString());
+  // Add the new review including its rating
+  product.review.push({
+    name: req.user.name || req.user.email,
+    comment: comment || "",
+    rating: rating || 0,
+  });
 
-  if (likedByIds.includes(userId)) {
-    product.likedBy = product.likedBy.filter((id) => id.toString() !== userId);
-    product.like = Math.max((product.like || 1) - 1, 0);
-  } else {
-    product.likedBy.push(req.user._id);
-    product.like = (product.like || 0) + 1;
-  }
+  // Incremental update of ratings
+  product.ratings.average =
+    ((product.ratings.average * product.ratings.count) + (rating || 0)) /
+    (product.ratings.count + 1);
+  product.ratings.count = product.ratings.count + 1;
 
   await product.save();
-  res.json({ success: true, product: normalizeProduct(product) });
-});
 
-// -------------------- Helper --------------------
-const normalizeProduct = (product) => ({
-  ...product,
-  _id: product._id.toString(),
-  likedBy: product.likedBy.map((id) => id.toString()),
+  res.status(201).json({
+    success: true,
+    message: "Review added successfully",
+    ratings: product.ratings,
+    review: product.review,
+  });
 });

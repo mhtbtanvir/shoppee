@@ -67,6 +67,10 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  likedByCurrentUser: {
+    type: Boolean,
+    default: false,
+  },
   like: {
     type: Number,
     default: 0, // number of likes/favorites
@@ -74,10 +78,22 @@ const productSchema = new mongoose.Schema({
   },
   likedBy: [
   {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
+    
   }
 ],
+review: [
+  {
+    name: String,
+    comment: String,
+    rating: {
+      type: Number,
+      min: 0,
+      max: 5,
+    },
+  },
+]
+
 
 }, { timestamps: true });
 

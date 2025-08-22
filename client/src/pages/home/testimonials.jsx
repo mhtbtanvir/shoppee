@@ -76,7 +76,7 @@ const Testimonials = () => {
   return (
     <section
       aria-labelledby="testimonials-heading"
-      className="relative w-full min-h-[80vh] px-6 md:px-12 py-20 bg-gradient-to-b from-gray-50 via-white to-gray-50 overflow-hidden"
+      className="relative w-full min-h-[80vh] px-6 md:px-12 py-8 bg-gradient-to-b from-gray-50 via-white to-gray-50 overflow-hidden"
     >
       {/* blurred background accents */}
       <div className="absolute -top-32 -left-24 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl -z-10" />
@@ -96,7 +96,7 @@ const Testimonials = () => {
         >
           Loved by Thousands
         </h2>
-        <p className="mt-4 text-gray-600 text-lg max-w-2xl mx-auto">
+        <p className="mt-8 text-gray-600 text-lg max-w-2xl mx-auto">
           Discover why style icons, creators, and professionals trust us to elevate their look.
         </p>
       </motion.header>

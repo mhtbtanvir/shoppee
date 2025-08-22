@@ -19,7 +19,7 @@ const OTP = () => {
 
   // Redirect if no otpMode
   useEffect(() => {
-    if (!otpMode) navigate("/auth");
+    if (!otpMode) navigate("/auth/login");
   }, [otpMode, navigate]);
 
   // Countdown redirect after success

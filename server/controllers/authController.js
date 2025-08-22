@@ -195,6 +195,24 @@ const resetPassword = async (req, res) => {
   }
 };
 
+
+// GET /api/auth/me
+const getCurrentUser = async (req, res) => {
+  // If using JWT in cookies
+  if (!req.user) {
+    res.status(401);
+    throw new Error("Not authenticated");
+  }
+
+  const user = await User.findById(req.user._id).select("-password"); // exclude password
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  res.status(200).json({ user });
+};
+
 module.exports = {
   sendRegistrationOTP,
   createUser,
@@ -202,4 +220,5 @@ module.exports = {
   sendResetOTP,
   verifyResetOTP,
   resetPassword,
+  getCurrentUser,
 };

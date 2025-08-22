@@ -7,12 +7,21 @@ import OTP from "./pages/auth/otp";
 import RecreatePassword from "./pages/auth/recreatePassword";
 import HomeLayout from "./components/Layout/homeLayout";
 import HomePage from "./pages/homepage/homePage";
-import Product from "./pages/Products/product";
-import WishList from "./pages/Products/wishList";
+import Product from "./pages/navLink/product";
+import WishList from "./pages/navLink/wishList";
+import ProductDetails from "./pages/HeaderLinks/productsDetails";
+import About from "./pages/navLink/About";
+import Contact from "./pages/navLink/Contact";
 // Admin panel
 import AdminLayout from "./components/Layout/adminLayout.jsx";
 import AdminDashboard from "./pages/admin/dashboard.jsx";
 import AdminProducts from "./pages/admin/products.jsx";
+
+
+
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { fetchCurrentUser } from "./store/auth-slice"; // adjust path
 
 // PrivateRoute wrapper
 // const PrivateRoute = ({ children, user, role }) => {
@@ -22,6 +31,12 @@ import AdminProducts from "./pages/admin/products.jsx";
 // };
 
 function App() {
+    const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchCurrentUser());
+  }, [dispatch]);
+
   return (
     <Routes>
       {/* Auth routes */}
@@ -37,7 +52,12 @@ function App() {
      <Route path="/" element={<HomeLayout />}>
   <Route path="homepage" element={<HomePage />} />
   <Route path="products" element={<Product />} />
-  <Route path="wishlist" element={<WishList />} /> {/* added */}
+  <Route path="wishlist" element={<WishList />} /> 
+ <Route path="/productsDetails/:id" element={<ProductDetails />} />
+<Route path = "/about" element={<About/>}/>
+<Route path = "/contact" element={<Contact/>}/>
+
+
 </Route>
 
       {/* Admin routes */}

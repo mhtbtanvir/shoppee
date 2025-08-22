@@ -60,7 +60,7 @@ const Filter = ({ products, onFilterChange, initialCategory }) => {
   }, [category, brand, priceRange, rating, discount, products, onFilterChange]);
 
   return (
-    <div className="flex flex-wrap gap-6 mb-6 justify-center items-center p-4 bg-gray-100 rounded-md border border-gray-200">
+    <div className="flex flex-wrap gap-6 mb-6 justify-center items-center p-4 bg-gray-100 rounded-md border border-gray-700/70">
       {/* Category */}
       <div className="flex flex-col">
         <label className="text-gray-700 text-sm font-medium mb-1">Category</label>

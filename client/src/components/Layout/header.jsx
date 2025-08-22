@@ -1,18 +1,31 @@
-// components/Header.jsx
 "use client";
 import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import { CiHeart, CiSearch, CiUser } from "react-icons/ci";
 import { IoBagHandleSharp } from "react-icons/io5";
 import { RxHamburgerMenu } from "react-icons/rx";
-import logo from '../../assets/logo2.png'
+import { selectAuth, logout } from "../../store/auth-slice"; // ✅ use your slice
+import logo from "../../assets/logo2.png";
+import SearchForm from "./SearchForm";
+
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const { isAuthenticated, user } = useSelector(selectAuth); // ✅ use selector
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/"); // back to homepage
+  };
+
   const links = [
-    { text: "Home", url: "index.html" },
-    { text: "Catalog", url: "catalog.html" },
-    { text: "About Us", url: "about-us.html" },
-    { text: "Contact Us", url: "contact-us.html" },
+    { text: "Home", url: "/homepage" },
+    { text: "Catalog", url: "/products" },
+    { text: "About Us", url: "/about-us" },
+    { text: "Contact Us", url: "/contact-us" },
   ];
 
   const iconLinks = [
@@ -22,127 +35,122 @@ const Header = () => {
       text: "Wishlist",
     },
     {
-      href: "",
+      href: "/cart",
       icon: <IoBagHandleSharp className="h-6 w-6" />,
       text: "Cart",
     },
     {
-      href: "",
+      href: "/account",
       icon: <CiUser className="h-6 w-6" />,
       text: "Account",
     },
   ];
 
   return (
-    <div className="w-full -mt-3" >
-    <header className="w-full bg-white shadow-sm shadow-gray-400 top-0 z-10">
-        <div className="mx-auto  flex h-24 max-w-[2400px] items-center justify-between px-8">
-            {/* Logo */}
-          <a href="/" className="w-16 flex">
+    <div className="w-full -mt-3">
+      <header className="w-full bg-white shadow-sm shadow-gray-400 top-0 z-10">
+        <div className="mx-auto flex h-24 max-w-[2400px] items-center justify-between px-8">
+          {/* Logo */}
+          <Link to="/homepage" className="w-16 flex">
             <img
-                className="cursor-pointer sm:h-auto sm:w-auto"
-                src={logo}
-                alt="logo2"
+              className="cursor-pointer sm:h-auto sm:w-auto"
+              src={logo}
+              alt="logo"
             />
-            {/* <img
-                className="cursor-pointer sm:h-auto sm:w-auto"
-                src="https://i.imgur.com/520zDfd.png"
-                alt="logo"
-            /> */}
+          </Link>
 
-          </a>
+          {/* Hamburger (mobile) */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="bg-white border-2 border-black p-2 rounded-md hover:bg-gray-100 transition"
+            >
+              <RxHamburgerMenu className="w-6 h-6 text-black" />
+            </button>
+          </div>
 
-    {/* Hamburger (mobile) */}
-    {/* Hamburger (mobile) */}
-    <div className="md:hidden">
-    <button
-        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        className="bg-white border-2 border-black p-2 rounded-md hover:bg-gray-100 transition"
-    >
-        <RxHamburgerMenu className="w-6 h-6 text-black" />
-    </button>
-    </div>
+        
+          {/* Search (desktop) */}
+          <SearchForm className="hidden h-9 w-2/5 md:flex" />
 
+          {/* Icons + Auth Links (desktop) */}
+          <div className="hidden gap-5 md:!flex items-center">
+            {iconLinks.map((link, index) => (
+              <Link
+                key={index}
+                to={link.href}
+                className="flex cursor-pointer flex-col items-center justify-center"
+              >
+                {link.icon}
+                <p className="text-xs">{link.text}</p>
+              </Link>
+            ))}
 
-    {/* Search (desktop) */}
-    <form className="bg-gray-200 rounded-xl hidden h-9 
-    w-2/5 items-center
-     border md:flex ">
-      <CiSearch className="mx-3 h-4 w-4" />
-      <input
-        className="w-11/12 outline-none bg-gray-200"
-        type="search"
-        placeholder="Search"
-      />
-      <button className="ml-auto flex-1 py-1 text-white h-full items-center
-       bg-gray-500 px-4 
-       rounded-l-none rounded-r-xl">
-        Search
-      </button>
-    </form>
+            
+          </div>
+        </div>
+      </header>
 
-    {/* Icons (desktop) */}
-    <div className="hidden gap-3 md:!flex ">
-      {iconLinks.map((link, index) => (
-        <a
-          key={index}
-          href={link.href}
-          className="flex cursor-pointer flex-col items-center justify-center"
-        >
-          {link.icon}
-          <p className="text-xs">{link.text}</p>
-        </a>
-      ))}
-    </div>
-  </div>
-</header>
+      {/* Mobile menu */}
+      {mobileMenuOpen && (
+        <section className="md:hidden absolute left-0 right-0 z-50 h-screen w-full bg-white">
+          <div className="mx-auto">
+            {/* Icons */}
+            <div className="mx-auto flex w-full justify-center gap-6 py-4">
+              {iconLinks.map((link, index) => (
+                <Link
+                  key={index}
+                  to={link.href}
+                  className="flex cursor-pointer flex-col items-center justify-center"
+                >
+                  {link.icon}
+                  <p className="text-xs">{link.text}</p>
+                </Link>
+              ))}
+            </div>
 
-{/* Mobile menu */}
-{mobileMenuOpen && (
-  <section className="md:hidden absolute left-0 right-0 z-50 h-screen w-full bg-white">
-    <div className="mx-auto">
-      {/* Icons */}
-      <div className="mx-auto flex w-full justify-center gap-3 py-4 ">
-        {iconLinks.map((link, index) => (
-          <a
-            key={index}
-            href={link.href}
-            className="flex cursor-pointer flex-col items-center justify-center"
-          >
-            {link.icon}
-            <p className="text-xs">{link.text}</p>
-          </a>
-        ))}
-      </div>
+            {/* Auth (mobile) */}
+            <div className="text-center py-3">
+              {isAuthenticated ? (
+                <div className="flex flex-col items-center gap-2">
+                  <span className="text-gray-700">
+                    Hi, {user?.name || "User"}
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    className="text-red-600 hover:text-red-800"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="flex justify-center gap-4">
+                  <Link to="/auth/login" className="text-gray-700">
+                    Login
+                  </Link>
+                  <span>|</span>
+                  <Link to="/auth/register" className="text-gray-700">
+                    Signup
+                  </Link>
+                </div>
+              )}
+            </div>
 
-      {/* Search (mobile) */}
-      <form className="bg-gray-200 my-4 mx-5 flex h-9 items-center border-2 rounded-xl">
-        <CiSearch className="mx-3 h-4 w-4" />
-        <input
-          className="w-11/12 outline-none  bg-gray-200 "
-          type="search"
-          placeholder="Search"
-        />
-        <button
-          type="submit"
-          className="ml-auto py-1 text-white h-full items-center bg-gray-500 px-4 rounded-l-none rounded-r-xl"
-        >
-          Search
-        </button>
-      </form>
+            {/* Search (mobile) */}
+            <SearchForm className="flex h-9 w-full md:hidden my-4  mx-auto" />
+             
 
-      {/* Links */}
-      <ul className="text-center font-medium">
-        {links.map((link, index) => (
-          <li key={index} className="py-2">
-            <a href={link.url}>{link.text}</a>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </section>
-)}
-
+            {/* Links */}
+            <ul className="text-center font-medium">
+              {links.map((link, index) => (
+                <li key={index} className="py-2">
+                  <Link to={link.url}>{link.text}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
     </div>
   );
 };

@@ -1,4 +1,3 @@
-// pages/homePage.jsx
 import React from "react";
 import HeroSection from "../home/heroSection";
 import Categories from "../home/categories";
@@ -11,33 +10,58 @@ import Deals from "../home/deals";
 const HomePage = () => {
   return (
     <>
-      {/* Hero stays full width without border */}
-      <section id="home">
+      {/* Hero: full-width, premium background */}
+      <section id="home" className="relative w-full">
         <HeroSection />
       </section>
 
-      {/* Each section wrapped individually with border (no rounding) */}
-      <section id="shop" className="m-6 -mt-6 border-t-0 border-2 border-gray-500 p-6">
+      {/* Featured Products */}
+      <section
+        id="shop"
+        className="mx-6 mt-20 p-8 border border-t-8 border-gray-300 shadow-md rounded-2xl bg-gradient-to-l from-gray-100/50 to-gray-200/30 backdrop-blur-sm"
+      >
         <FeaturedProducts />
       </section>
 
-      <section id="categories" className="m-6 -mt-6 border-t-0 border-2 border-gray-500 p-6">
+      {/* Categories */}
+      <section
+        id="categories"
+        className="mx-6 mt-20 border border-t-8 p-8  border-gray-300 shadow-md rounded-2xl bg-gray-400/30 backdrop-blur-lg"
+      >
         <Categories />
       </section>
 
-      <section id="deals" className="m-6 -mt-6 border-t-0 border-2 border-gray-500 p-6">
+      {/* Deals */}
+      <section
+        id="deals"
+        className="mx-6 mt-20 p-8 border border-t-4 border-gray-300 
+        shadow-md rounded-2xl bg-gradient-to-l from-gray-100/50 to-gray-200/30 backdrop-blur-sm"
+      >
         <Deals />
       </section>
 
-      <section id="stories" className="m-6 -mt-6 border-t-0 border-2 border-gray-500 p-6">
+      {/* Featured Stories */}
+      <section
+        id="stories"
+        className="mx-6 mt-20 p-8 border border-t-4 border-gray-300 shadow-md rounded-2xl
+         bg-gradient-to-l from-gray-100/50 to-gray-200/30 backdrop-blur-sm"
+      >
         <FeaturedStories />
       </section>
 
-      <section id="contact" className="m-6 -mt-6 border-t-0 border-2 border-gray-500 p-6">
+      {/* Testimonials */}
+      <section
+        id="contact"
+        className="mx-6 mt-20 p-8 border border-t-2 border-gray-300 shadow-lg rounded-xl bg-gradient-to-l from-gray-100/50 to-gray-200/30 backdrop-blur-sm backdrop-blur-md"
+      >
         <Testimonials />
       </section>
 
-      <section id="newsletter" className="m-6 -mt-6 border-t-0 border-2 border-gray-500 p-6">
+      {/* Newsletter */}
+      <section
+        id="newsletter"
+        className="mx-6 mt-20 p-8 border-t-2 rounded-b-sm border-gray-300 shadow-md rounded-2xl bg-gradient-to-l from-gray-100/50 to-gray-200/30 backdrop-blur-sm"
+      >
         <Newsletter />
       </section>
     </>

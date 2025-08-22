@@ -5,6 +5,8 @@ import { useLocation } from "react-router-dom";
 import ProductCard from "@/components/product/ProductCard";
 import Filter from "@/components/product/Filter";
 
+const API_URL = "http://localhost:5000/api/products";
+
 const Product = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -14,18 +16,13 @@ const Product = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentUserId, setCurrentUserId] = useState(null);
-  const [liked, setLiked] = useState({}); // key: productId, value: true/false
 
-  // Fetch products on mount or when category changes
+  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const res = await axios.get("http://localhost:5000/api/products", {
-          withCredentials: true,
-        });
-
+        const res = await axios.get(API_URL, { withCredentials: true });
         const normalizedProducts = (res.data.products || []).map((product) => {
           const images =
             Array.isArray(product.images) && product.images.length > 0
@@ -46,8 +43,9 @@ const Product = () => {
             ...product,
             images,
             discountPrice,
+            likedByCurrentUser: product.likedByCurrentUser || false,
+            like: product.like || product.likedBy?.length || 0,
             ratings: product.ratings || { average: 0, count: 0 },
-            likedBy: product.likedBy?.map(String) || [],
           };
         });
 
@@ -60,18 +58,6 @@ const Product = () => {
           : normalizedProducts;
 
         setFilteredProducts(initialFiltered);
-
-        // Optionally get current user ID
-        const userId =
-          normalizedProducts.flatMap((p) => p.likedBy).find(Boolean) || null;
-        setCurrentUserId(userId);
-
-        // Initialize liked state
-        const likedState = {};
-        normalizedProducts.forEach((p) => {
-          likedState[p._id] = p.likedBy.includes(userId);
-        });
-        setLiked(likedState);
       } catch (err) {
         console.error("Error fetching products:", err);
         setError("Failed to fetch products from server");
@@ -83,50 +69,70 @@ const Product = () => {
     fetchProducts();
   }, [categoryFromQuery]);
 
-  // Handle like button click
+  // Handle like/unlike
   const handleLike = async (productId) => {
-    if (!currentUserId) return;
+    // Optimistic UI update
+    setFilteredProducts((prev) =>
+      prev.map((p) =>
+        p._id === productId
+          ? {
+              ...p,
+              likedByCurrentUser: !p.likedByCurrentUser,
+              like: !p.likedByCurrentUser ? p.like + 1 : Math.max(p.like - 1, 0),
+            }
+          : p
+      )
+    );
 
     try {
-      const { data } = await axios.post(
-        `http://localhost:5000/api/products/${productId}/like`,
+      const res = await axios.post(
+        `${API_URL}/${productId}/like`,
         {},
         { withCredentials: true }
       );
 
-      // Update liked state with backend response
-      setLiked((prev) => ({
-        ...prev,
-        [productId]: data.product.likedBy.includes(currentUserId),
-      }));
+      const updatedServerProduct = res.data.product;
 
-      // Update filteredProducts to reflect new like count and likedBy
+      // Preserve images from previous state
       setFilteredProducts((prev) =>
         prev.map((p) =>
           p._id === productId
             ? {
                 ...p,
-                likedBy: data.product.likedBy.map(String),
-                like: data.product.like,
+                likedByCurrentUser: updatedServerProduct.likedByCurrentUser,
+                like: updatedServerProduct.like || p.like,
+                images: p.images, // important to keep images intact
               }
             : p
         )
       );
     } catch (err) {
-      console.error("Error updating like:", err);
+      console.error("Error liking product:", err);
+      // Rollback optimistic update
+      setFilteredProducts((prev) =>
+        prev.map((p) =>
+          p._id === productId
+            ? {
+                ...p,
+                likedByCurrentUser: !p.likedByCurrentUser,
+                like: !p.likedByCurrentUser ? p.like + 1 : Math.max(p.like - 1, 0),
+              }
+            : p
+        )
+      );
     }
   };
 
   return (
-    <div className="m-6 border border-black shadow-lg p-6">
+    <div className="m-6 border-2 border-black shadow-lg p-6">
       {/* Heading */}
-      <div className="text-center mb-6 border-b-2 border-black pb-4">
-        <h1 className="text-4xl font-bold text-gray-800">
+      <div className="text-center mb-6 border-b-2 border-gray-100   pb-4">
+        <h1 className="text-4xl font-prata font-bold text-gray-800">
           {categoryFromQuery ? `${categoryFromQuery} Products` : "Our Products"}
         </h1>
       </div>
 
-      {/* Filter */}
+      {/* Filter Component */}
       <Filter
         products={
           categoryFromQuery
@@ -149,7 +155,7 @@ const Product = () => {
           {filteredProducts.map((product) => (
             <ProductCard
               key={product._id}
-              product={{ ...product, liked: liked[product._id] }}
+              product={product}
               onLike={handleLike}
             />
           ))}
