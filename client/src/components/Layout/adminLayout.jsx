@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { FiMenu, FiHome, FiBox } from "react-icons/fi";
-
+import {  useDispatch } from "react-redux";
+import {  logout } from "../../store/auth-slice";
 const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -10,6 +11,7 @@ const AdminLayout = () => {
   const [error, setError] = useState(null);
 
   const validateAdmin = async () => {
+    
     setLoading(true);
     setError(null);
     try {
@@ -31,11 +33,12 @@ const AdminLayout = () => {
   useEffect(() => {
     validateAdmin();
   }, []);
-
-  const handleLogout = () => {
-    navigate("/auth/login");
-  };
-
+const dispatch = useDispatch();
+ const handleLogout = () => {
+  
+     dispatch(logout()); // clear Redux auth state
+     navigate("/auth/login");
+   };
   const isActive = (path) => location.pathname === path;
 
   if (loading) {

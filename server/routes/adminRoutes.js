@@ -9,7 +9,19 @@ const {
   updateProductAdmin,
   deleteProductAdmin,
   getProducts,
-} = require('../controllers/productController');
+  getDashboardStats,
+  getRecentOrders,
+  getRecentProducts
+} = require('../controllers/adminController');
+
+
+router.get('/stats', adminOnly, asyncHandler(getDashboardStats));
+
+// Recent orders
+router.get('/orders', adminOnly, asyncHandler(getRecentOrders));
+
+// Recent products
+router.get('/products', adminOnly, asyncHandler(getRecentProducts));
 
 // Optional images: use .array but images may be empty
 router.post(
@@ -18,7 +30,7 @@ router.post(
   upload.array('images', 5), // 0 to 5 images
   asyncHandler(createProductAdmin)
 );
-
+router.get('/products/allproducts', adminOnly, asyncHandler(getProducts));
 router.put(
   '/products/:id',
   adminOnly,
@@ -27,6 +39,6 @@ router.put(
 );
 
 router.delete('/products/:id', adminOnly, asyncHandler(deleteProductAdmin));
-router.get('/products', adminOnly, asyncHandler(getProducts));
+
 
 module.exports = router;

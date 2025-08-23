@@ -5,6 +5,7 @@ import Header from "./header";
 import Navbar from "./navBar";
 import Footer from "./footer";
 
+
 const HomeLayout = () => {
   return (
     <div className="flex flex-col min-h-screen rounded-md">
@@ -14,6 +15,8 @@ const HomeLayout = () => {
          <Header />
         <Navbar />
         </div>
+
+        
        
       </header>
 

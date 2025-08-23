@@ -8,15 +8,17 @@ import RecreatePassword from "./pages/auth/recreatePassword";
 import HomeLayout from "./components/Layout/homeLayout";
 import HomePage from "./pages/homepage/homePage";
 import Product from "./pages/navLink/product";
-import WishList from "./pages/navLink/wishList";
-import ProductDetails from "./pages/HeaderLinks/productsDetails";
+import WishList from "./pages/HeaderLinks/wishList";
+import ProductDetails from "./pages/navLink/productsDetails";
 import About from "./pages/navLink/About";
 import Contact from "./pages/navLink/Contact";
+
 // Admin panel
 import AdminLayout from "./components/Layout/adminLayout.jsx";
 import AdminDashboard from "./pages/admin/dashboard.jsx";
 import AdminProducts from "./pages/admin/products.jsx";
-
+import CartPage from "./pages/HeaderLinks/cart";
+import Profile from "./pages/HeaderLinks/profile";
 
 
 import { useEffect } from "react";
@@ -49,16 +51,18 @@ function App() {
       </Route>
 
       {/* Home routes */}
-     <Route path="/" element={<HomeLayout />}>
-  <Route path="homepage" element={<HomePage />} />
-  <Route path="products" element={<Product />} />
-  <Route path="wishlist" element={<WishList />} /> 
- <Route path="/productsDetails/:id" element={<ProductDetails />} />
-<Route path = "/about" element={<About/>}/>
-<Route path = "/contact" element={<Contact/>}/>
+      <Route path="/" element={<HomeLayout />}>
+          <Route path="homepage" element={<HomePage />} />
+          <Route path="products" element={<Product />} />
+          <Route path="wishlist" element={<WishList />} /> 
+          <Route path="/productsDetails/:id" element={<ProductDetails />} />
+          <Route path = "/about" element={<About/>}/>
+          <Route path = "/contact" element={<Contact/>}/>
+          <Route path = "/cart" element={<CartPage/>}/>
+          <Route path= "/profile" element={<Profile/>}/>
 
 
-</Route>
+       </Route>
 
       {/* Admin routes */}
       <Route

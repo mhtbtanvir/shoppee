@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 
 const Contact = () => {
+ 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -20,7 +21,9 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-200 via-black- to-gray-50 flex items-center justify-center p-6">
+     
       <div className="max-w-6xl w-full bg-white/30 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-10 flex flex-col lg:flex-row gap-10">
+       
         {/* Left Side: Contact Form */}
         <div className="flex-1">
           <h1 className="text-4xl font-bold text-gray-800 mb-6 tracking-wide">

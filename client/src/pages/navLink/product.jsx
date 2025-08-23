@@ -4,10 +4,14 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 import ProductCard from "@/components/product/ProductCard";
 import Filter from "@/components/product/Filter";
+import { useNavigate } from "react-router-dom";
+import { IoArrowBackOutline } from "react-icons/io5";
 
 const API_URL = "http://localhost:5000/api/products";
 
 const Product = () => {
+  
+  const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const categoryFromQuery = queryParams.get("category");
@@ -125,6 +129,13 @@ const Product = () => {
 
   return (
     <div className="m-6 border-2 border-black shadow-lg p-6">
+         <button
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-2 text-gray-700 hover:text-gray-900 mb-6"
+      >
+        <IoArrowBackOutline className="w-6 h-6" />
+        <span className="font-medium">Back </span>
+      </button>
       {/* Heading */}
       <div className="text-center mb-6 border-b-2 border-gray-100   pb-4">
         <h1 className="text-4xl font-prata font-bold text-gray-800">

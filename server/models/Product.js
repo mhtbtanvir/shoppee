@@ -83,17 +83,16 @@ const productSchema = new mongoose.Schema({
   }
 ],
 review: [
-  {
-    name: String,
-    comment: String,
-    rating: {
-      type: Number,
-      min: 0,
-      max: 5,
+    {
+      name: String,
+      comment: String,
+      rating: {
+        type: Number,
+        min: 0,
+        max: 5,
+      },
     },
-  },
-]
-
+  ]
 
 }, { timestamps: true });
 

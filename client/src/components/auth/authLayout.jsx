@@ -14,7 +14,7 @@ const AuthLayout = () => {
         <div className="relative md:w-1/2 h-96 md:h-auto flex flex-col">
           <header className="relative z-20">
             <Header />
-            {/* <Navbar /> */}
+            {/* <Navbar />  */}
           </header>
 
           <div className="md:h-full h-auto overflow-hidden relative">

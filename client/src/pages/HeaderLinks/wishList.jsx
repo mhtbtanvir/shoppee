@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ProductCard from "@/components/product/ProductCard";
-
+import { useNavigate } from "react-router-dom";
+import { IoArrowBackOutline } from "react-icons/io5";
 const Wishlist = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchWishlist = async () => {
@@ -101,6 +104,16 @@ const Wishlist = () => {
 
   return (
     <div className="m-6 border border-black shadow-lg p-6">
+        <div className="absolute m-6 z-50">
+                 <button
+                      onClick={() => navigate(-1)}
+                      className="flex items-center gap-2   text-gray-700 hover:text-gray-900 -mt-2"
+                    >
+                      <IoArrowBackOutline className="-ml-6 w-6 h-6" />
+                      <span className="font-medium hidden md:block">Back </span>
+                      
+                    </button>
+            </div>
       <h1 className="text-4xl font-bold text-gray-800 text-center mb-6">
         Your Wishlist
       </h1>
