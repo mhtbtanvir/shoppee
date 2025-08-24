@@ -18,40 +18,43 @@ const PORT = process.env.PORT || 5000;
 // --- Trust first proxy (for Render, Vercel, Heroku) ---
 app.set('trust proxy', 1);
 
-// --- Middleware ---
-app.use(helmet()); // security headers
-app.use(morgan('dev')); // logging
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-
 // --- Rate Limiter ---
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 500,
   message: 'Too many requests from this IP, please try again later.',
 });
-app.use(limiter);
 
-// --- CORS ---
-// --- Allowed origins ---
+// --- Allowed Origins ---
 const allowedOrigins = [
   'https://shoppee-mr6ffyrfr-tanvir-mahtabs-projects.vercel.app',
   'https://shoppee-psi.vercel.app',
   'http://localhost:5173',
 ];
 
-// --- Global CORS for API ---
-// Allowed origins
-const allowedOrigins = [
-  'https://shoppee-mr6ffyrfr-tanvir-mahtabs-projects.vercel.app',
-  'https://shoppee-psi.vercel.app',
-  'http://localhost:5173',
-];
+// --- Middleware ---
+app.use(helmet()); // general security headers
 
-// Global CORS for API
+// --- Content Security Policy ---
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      imgSrc: [
+        "'self'",
+        "data:",
+        "https://shoppee-psi.vercel.app",
+        "https://shoppee-mr6ffyrfr-tanvir-mahtabs-projects.vercel.app",
+        "https://shoppee-sb9u.onrender.com", // backend hosting uploaded images
+      ],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+    },
+  })
+);
+
 app.use(cors({
-  origin: function(origin, callback) {
+  origin: function (origin, callback) {
     if (!origin) return callback(null, true); // allow curl, mobile apps, etc.
     if (allowedOrigins.indexOf(origin) === -1) {
       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
@@ -64,12 +67,17 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Expires', 'Pragma'],
 }));
 
-// Serve uploads (remove any duplicate /uploads middlewares!)
+app.use(morgan('dev')); // logging
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(limiter);
+
+// --- Serve uploads ---
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-
-// --- Serve uploaded images and static assets ---
-app.use(express.static(path.join(__dirname, 'dist'))); // for frontend build if needed
+// --- Serve frontend build ---
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // --- API Routes ---
 app.use('/api/auth', require('./routes/authRoutes'));
