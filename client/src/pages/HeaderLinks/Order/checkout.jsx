@@ -5,7 +5,7 @@ import axios from "axios";
 import { FaTruck, FaCreditCard, FaMoneyBillWave } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import CreditCard from "./CreditCard";
+import CreditCard from "./creditCard";
 import { clearCart } from "@/store/cart-slice";
 
 const Checkout = () => {
