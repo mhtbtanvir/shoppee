@@ -42,9 +42,17 @@ const allowedOrigins = [
 ];
 
 // --- Global CORS for API ---
+// Allowed origins
+const allowedOrigins = [
+  'https://shoppee-mr6ffyrfr-tanvir-mahtabs-projects.vercel.app',
+  'https://shoppee-psi.vercel.app',
+  'http://localhost:5173',
+];
+
+// Global CORS for API
 app.use(cors({
   origin: function(origin, callback) {
-    if (!origin) return callback(null, true); // allow mobile apps, curl, etc.
+    if (!origin) return callback(null, true); // allow curl, mobile apps, etc.
     if (allowedOrigins.indexOf(origin) === -1) {
       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
       return callback(new Error(msg), false);
@@ -56,23 +64,8 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Expires', 'Pragma'],
 }));
 
-// --- Static uploads with the SAME CORS policy ---
-// --- Serve uploads with proper CORS ---
-app.use(
-  '/uploads',
-  cors({
-    origin: function(origin, callback) {
-      if (!origin) return callback(null, true); // allow curl, mobile apps, etc.
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
-    },
-    credentials: true,
-  }),
-  express.static(path.join(__dirname, 'uploads'))
-);
+// Serve uploads (remove any duplicate /uploads middlewares!)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 // --- Serve uploaded images and static assets ---
