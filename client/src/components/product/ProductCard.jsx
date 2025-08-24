@@ -340,7 +340,7 @@ return (
       <div className="flex flex-col gap-2 mt-auto">
         <button
           onClick={() => navigate(`/productsDetails/${product._id}`)}
-          className="w-full border border-gray-300 text-gray-800 bg-gray-100 py-2 rounded-lg font-semibold hover:bg-gray-200 transition-all"
+          className="w-full border-2 border-gray-700/30 text-gray-800 bg-gray-100 py-2 rounded-lg font-semibold hover:bg-gray-200 transition-all"
         >
           See Details
         </button>
