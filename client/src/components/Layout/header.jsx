@@ -7,7 +7,7 @@ import { IoBagHandleSharp } from "react-icons/io5";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { selectAuth, logout } from "../../store/auth-slice"; // ✅ use your slice
 import logo from "../../assets/logo2.png";
-import SearchForm from "./SearchForm";
+import SearchForm from "./searchForm";
 import { ShoppingCart } from "lucide-react";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { AiOutlineHome } from "react-icons/ai";
