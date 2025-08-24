@@ -30,7 +30,7 @@ app.use(limiter);
 
 // --- CORS: permissive ---
 app.use(cors({
-  origin: true, // allow all origins
+  origin: 'https://shoppee-psi.vercel.app', // allow all origins
   credentials: true,
 }));
 
