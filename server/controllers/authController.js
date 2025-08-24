@@ -70,20 +70,16 @@ const createUser = async (req, res) => {
 
     await redisClient.del(redisKey);
 
-    const token = signToken(user._id, user.role); // make sure your signToken accepts role
-    res.cookie('token', token, { 
-      httpOnly: true,
-       sameSite: 'strict',
-  // secure: process.env.NODE_ENV === 'production',
+const token = signToken(user._id, user.role);
+res.cookie('token', token, {
+  httpOnly: true,
+  sameSite: 'none',  // allows cross-site cookies
+  secure: true,      // HTTPS only, required for Vercel <-> Render
+  maxAge: 24 * 60 * 60 * 1000, // 1 day (optional)
+});
 
-     },
-     
-      
-    );
-    
-
-    res.status(201).json({ message: 'User registered successfully', user: { name, email, role } });
-  } catch (err) {
+res.status(201).json({ message: 'User registered successfully', user: { name, email, role } });
+} catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
@@ -96,17 +92,16 @@ const loginUser = async (req, res) => {
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
-      const token = signToken(user._id, user.role); // make sure your signToken accepts role
-      res.cookie('token',
-         token, 
-         { httpOnly: true ,
-          sameSite: 'strict',
-  // secure: process.env.NODE_ENV === 'production',
+const token = signToken(user._id, user.role);
+res.cookie('token', token, {
+  httpOnly: true,
+  sameSite: 'none',  // allows cross-site cookies
+  secure: true,      // HTTPS only
+  maxAge: 24 * 60 * 60 * 1000, // 1 day
+});
 
-         });
-
-      res.json({ message: 'Logged in successfully', user: { name: user.name, email } });
-  } catch (err) {
+res.json({ message: 'Logged in successfully', user: { name: user.name, email } });
+} catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
