@@ -56,9 +56,6 @@ app.get('/uploads/:filename', (req, res) => {
   });
 });
 
-// Remove conflicting express.static for uploads
-// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
 // --- Serve frontend build if needed ---
 app.use(express.static(path.join(__dirname, 'dist')));
 
