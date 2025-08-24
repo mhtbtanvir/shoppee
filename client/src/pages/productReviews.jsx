@@ -23,7 +23,7 @@ const ProductReviews = ({ product, setProduct }) => {
 
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/products/${product._id}/review`,
+        `${import.meta.env.VITE_API_URL}/api/products/${product._id}/review`,
         { comment, rating },
         { withCredentials: true }
       );

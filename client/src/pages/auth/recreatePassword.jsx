@@ -69,7 +69,7 @@ const RecreatePassword = () => {
     setError(null);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/recreate-password/reset", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/recreate-password/reset`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, newPassword: password, otp }),

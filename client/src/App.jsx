@@ -54,7 +54,7 @@ function App() {
 
       {/* Home routes */}
       <Route path="/" element={<HomeLayout />}>
-          <Route path="homepage" element={<HomePage />} />
+          <Route path="" element={<HomePage />} />
           <Route path="products" element={<Product />} />
           <Route path="wishlist" element={<WishList />} /> 
           <Route path="/productsDetails/:id" element={<ProductDetails />} />

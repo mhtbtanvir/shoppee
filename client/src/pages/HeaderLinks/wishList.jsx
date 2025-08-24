@@ -16,7 +16,7 @@ const Wishlist = () => {
       setLoading(true);
       try {
         const { data } = await axios.get(
-          "http://localhost:5000/api/products/wishlist",
+          `${import.meta.env.VITE_API_URL}/api/products/wishlist`,
           { withCredentials: true }
         );
 
@@ -28,7 +28,7 @@ const Wishlist = () => {
             const images = (product.images || []).map((img) =>
               typeof img === "string"
                 ? img.startsWith("/uploads/")
-                  ? `http://localhost:5000${img}`
+                  ? `${import.meta.env.VITE_API_URL}${img}`
                   : img
                 : img.url
             );
@@ -77,7 +77,7 @@ const Wishlist = () => {
 
     try {
       const { data } = await axios.post(
-        `http://localhost:5000/api/products/${productId}/like`,
+        `${import.meta.env.VITE_API_URL}/api/products/${productId}/like`,
         {},
         { withCredentials: true }
       );

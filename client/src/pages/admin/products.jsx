@@ -16,7 +16,7 @@ const [dropdownOpen, setDropdownOpen] = useState(false);
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/admin/products/allproducts', { credentials: 'include' });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/products/allproducts`, { credentials: 'include' });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed to fetch');
       setProducts(data.products || []);
@@ -66,8 +66,8 @@ const [colorInput, setColorInput] = useState("");
       images.forEach(img => data.append('images', img));
 
       const url = editId 
-        ? `http://localhost:5000/api/admin/products/${editId}` 
-        : 'http://localhost:5000/api/admin/products';
+        ? `${import.meta.env.VITE_API_URL}/api/admin/products/${editId}` 
+        : `${import.meta.env.VITE_API_URL}/api/admin/products`;
       const res = await fetch(url, { method: editId ? 'PUT' : 'POST', body: data, credentials: 'include' });
       const result = await res.json();
       if (!res.ok) throw new Error(result.message || 'Operation failed');
@@ -93,7 +93,7 @@ const [colorInput, setColorInput] = useState("");
   const deleteProduct = async id => {
     if (!window.confirm('Are you sure?')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/products/${id}`, { method: 'DELETE', credentials: 'include' });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/products/${id}`, { method: 'DELETE', credentials: 'include' });
       const result = await res.json();
       if (!res.ok) throw new Error(result.message || 'Delete failed');
       setMessage({ type: 'success', text: 'Product deleted' });

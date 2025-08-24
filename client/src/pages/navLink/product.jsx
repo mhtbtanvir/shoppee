@@ -7,7 +7,7 @@ import Filter from "@/components/product/Filter";
 import { useNavigate } from "react-router-dom";
 import { IoArrowBackOutline } from "react-icons/io5";
 
-const API_URL = "http://localhost:5000/api/products";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/products`;
 
 const Product = () => {
   
@@ -32,7 +32,7 @@ const Product = () => {
             Array.isArray(product.images) && product.images.length > 0
               ? product.images.map((img) => ({
                   url: img.startsWith("/uploads/")
-                    ? `http://localhost:5000${img}`
+                    ? `${import.meta.env.VITE_API_URL}${img}`
                     : img,
                   alt: product.name,
                 }))

@@ -12,7 +12,7 @@ const Categories = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/products", {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/products`, {
           withCredentials: true,
         });
 
@@ -77,7 +77,7 @@ const Categories = () => {
                     src={
                       typeof cat.image === "string"
                         ? cat.image.startsWith("/uploads/")
-                          ? `http://localhost:5000${cat.image}`
+                          ? `${import.meta.env.VITE_API_URL}${cat.image}`
                           : cat.image
                         : cat.image.url
                     }

@@ -10,7 +10,7 @@ const Profile = () => {
   };
 
   const handleUserInterface = () => {
-    navigate("/homepage");
+    navigate("/");
   };
 
   return (

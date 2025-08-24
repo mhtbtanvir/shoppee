@@ -12,7 +12,7 @@ const FeaturedProducts = () => {
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/products", {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/products`, {
           withCredentials: true,
         });
 
@@ -23,7 +23,7 @@ const FeaturedProducts = () => {
               Array.isArray(product.images) && product.images.length > 0
                 ? product.images.map((img) => ({
                     url: img.startsWith("/uploads/")
-                      ? `http://localhost:5000${img}`
+                      ? `${import.meta.env.VITE_API_URL}${img}`
                       : img,
                     alt: product.name,
                   }))
@@ -71,7 +71,7 @@ const FeaturedProducts = () => {
 
   try {
     const res = await axios.post(
-      `http://localhost:5000/api/products/${productId}/like`,
+      `${import.meta.env.VITE_API_URL}/api/products/${productId}/like`,
       {},
       { withCredentials: true }
     );

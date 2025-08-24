@@ -19,9 +19,9 @@ const AdminDashboard = () => {
     setError(null);
     try {
       const [statsRes, ordersRes, productsRes] = await Promise.all([
-        fetch("http://localhost:5000/api/admin/stats", { credentials: "include" }),
-        fetch("http://localhost:5000/api/admin/orders?limit=5", { credentials: "include" }),
-        fetch("http://localhost:5000/api/admin/products?limit=5", { credentials: "include" }),
+        fetch(`${import.meta.env.VITE_API_URL}/api/admin/stats`, { credentials: "include" }),
+        fetch(`${import.meta.env.VITE_API_URL}/api/admin/orders?limit=5`, { credentials: "include" }),
+        fetch(`${import.meta.env.VITE_API_URL}/api/admin/products?limit=5`, { credentials: "include" }),
       ]);
 
       if (!statsRes.ok) throw new Error("Failed to fetch stats");

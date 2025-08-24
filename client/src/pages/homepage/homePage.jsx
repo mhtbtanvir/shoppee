@@ -41,13 +41,13 @@ const HomePage = () => {
       </section>
 
       {/* Featured Stories */}
-      <section
+      {/* <section
         id="stories"
         className="mx-6 mt-20 p-8 border border-t-4 border-gray-300 shadow-md rounded-2xl
          bg-gradient-to-l from-gray-100/50 to-gray-200/30 backdrop-blur-sm"
       >
         <FeaturedStories />
-      </section>
+      </section> */}
 
       {/* Testimonials */}
       <section

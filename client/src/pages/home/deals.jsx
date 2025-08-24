@@ -8,7 +8,7 @@ const Deals = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_URL = "http://localhost:5000/api/products";
+  const API_URL = `${import.meta.env.VITE_API_URL}/api/products`;
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -21,7 +21,7 @@ const Deals = () => {
             Array.isArray(product.images) && product.images.length > 0
               ? product.images.map((img) => ({
                   url: img.startsWith("/uploads/")
-                    ? `http://localhost:5000${img}`
+                    ? `${import.meta.env.VITE_API_URL}${img}`
                     : img,
                   alt: product.name,
                 }))

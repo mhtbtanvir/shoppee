@@ -22,7 +22,7 @@ const Header = () => {
   const handleLogout = () => {
     dispatch(logout());
 
-    navigate("/homepage"); // back to homepage
+    navigate("/"); // back to homepage
   };
   
 
@@ -43,7 +43,7 @@ const CartIcon = () => {
 };
 
   const links = [
-    { text: "Home", url: "/homepage" },
+    { text: "Home", url: "/" },
     { text: "Catalog", url: "/products" },
     { text: "About Us", url: "/about" },
     { text: "Contact Us", url: "/contact" },
@@ -61,8 +61,8 @@ const iconLinks = [
     <div className=" w-full -mt-3">
       <header className="w-full bg-white shadow-sm shadow-gray-400 top-0 z-10">
        <div className="mx-auto flex h-24 max-w-[2400px] items-center justify-between px-8">
-  {/* Logo */}
-  <Link to="/homepage" className="w-16 flex">
+  
+  <Link to="/" className="w-16 flex">
     <img
       className="cursor-pointer sm:h-auto sm:w-auto"
       src={logo}
@@ -70,12 +70,11 @@ const iconLinks = [
     />
   </Link>
 
-  {/* Mobile Left Section */}
-    {/* Mobile Home Icon */}
+  
     <Link
       onClick={() =>
          setMobileMenuOpen(false)}
-      to="/homepage"
+      to="/"
       className="flex flex-col items-center justify-center gap-1 text-gray-700 hover:text-yellow-500 transition-colors"
     >
       <AiOutlineHome className="md:hidden text-blue-600/80 w-6 h-6" />
@@ -191,5 +190,7 @@ const iconLinks = [
     </div>
   );
 };
+
+
 
 export default Header;

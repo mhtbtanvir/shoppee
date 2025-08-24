@@ -25,7 +25,7 @@ const HeroSection = () => {
 
     {/* Third line with horizontal lines */}
     <div className="flex items-center justify-center space-x-2 md:space-x-4 whitespace-nowrap">
-      <h2 className="text-xl md:text-[36px] font-prata font-bold leading-tight tracking-wide flex-shrink-0">
+      <h2 className="text-xl mb-10 md:text-[36px] font-prata font-bold leading-tight tracking-wide flex-shrink-0">
         With How You Feel
       </h2>
     </div>
@@ -33,7 +33,15 @@ const HeroSection = () => {
     {/* Call to Action */}
     <a
       href="/auth/register"
-      className="inline-block mt-2 md:mt-4 px-4 md:px-6 py-1.5 md:py-2 bg-black text-white text-sm md:text-base font-semibold rounded-full hover:bg-gray-800 transition"
+      className=" py-2.5 ml-4 px-5 me-2 mb-2 text-sm 
+      font-medium
+       text-gray-600 focus:outline-none
+        bg-gray-500/10 rounded-lg border-2
+         border-gray-700/30 hover:bg-gray-300/80
+          hover:text-black-
+          focus:z-10 focus:ring-4
+       focus:ring-gray-100
+       "
     >
       Shop Now
     </a>

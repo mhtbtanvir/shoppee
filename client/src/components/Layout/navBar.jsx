@@ -37,7 +37,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const navItems = [
-    { label: "Home", href: "/homepage" },
+    { label: "Home", href: "/" },
     { label: "Catalog", href: "/products" },
     { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },
@@ -46,7 +46,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/products", {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/products`, {
           withCredentials: true,
         });
 

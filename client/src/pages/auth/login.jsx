@@ -22,7 +22,7 @@ const Login = () => {
     setError(null);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include", // if backend sends cookies
@@ -40,7 +40,9 @@ const Login = () => {
       dispatch(loginSuccess(userData));
 
       // Redirect
-      navigate("/homepage");
+      navigate("/");
+
+
     } catch (err) {
       setError(err.message);
       dispatch(loginFailure(err.message));
