@@ -1,4 +1,4 @@
-const Order = require("../models/order");
+const Order = require("../models/Order");
 
 // @desc    Create new order
 // @route   POST /api/orders
