@@ -57,11 +57,12 @@ app.use(cors({
 }));
 
 // --- Static uploads with the SAME CORS policy ---
+// --- Serve uploads with proper CORS ---
 app.use(
   '/uploads',
   cors({
     origin: function(origin, callback) {
-      if (!origin) return callback(null, true);
+      if (!origin) return callback(null, true); // allow curl, mobile apps, etc.
       if (allowedOrigins.indexOf(origin) === -1) {
         const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
         return callback(new Error(msg), false);
