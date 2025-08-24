@@ -34,15 +34,28 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // --- CORS ---
+const allowedOrigins = [
+  'https://shoppee-mr6ffyrfr-tanvir-mahtabs-projects.vercel.app',
+  'https://shoppee-psi.vercel.app',
+  'http://localhost:5173',
+];
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true); // allow mobile apps, curl, etc.
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control', 'Expires', 'Pragma'],
 }));
 
-// --- Serve uploaded images ---
+// --- Serve uploaded images and static assets ---
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.static(path.join(__dirname, 'dist'))); // for frontend build if needed
 
 // --- API Routes ---
 app.use('/api/auth', require('./routes/authRoutes'));
