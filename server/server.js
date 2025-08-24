@@ -75,7 +75,6 @@ app.use(
 
 
 // --- Serve uploaded images and static assets ---
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, 'dist'))); // for frontend build if needed
 
 // --- API Routes ---
