@@ -24,7 +24,7 @@ app.use(cookieParser());
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 500,
-  message: 'Too many requests from this IP, try later.',
+  message: 'Too many requests from this IP, try again later.',
 });
 app.use(limiter);
 
@@ -34,15 +34,30 @@ app.use(cors({
   credentials: true,
 }));
 
-// --- Helmet: permissive CSP ---
+// --- Helmet: permissive ---
 app.use(
   helmet({
     contentSecurityPolicy: false, // disable CSP entirely
   })
 );
 
-// --- Serve uploads ---
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// --- Serve uploaded files with permissive headers ---
+app.get('/uploads/:filename', (req, res) => {
+  const options = {
+    root: path.join(__dirname, 'uploads'),
+    headers: {
+      'Access-Control-Allow-Origin': '*', // allow any origin
+      'Cross-Origin-Resource-Policy': 'cross-origin', // allow cross-origin
+    },
+  };
+  const fileName = req.params.filename;
+  res.sendFile(fileName, options, (err) => {
+    if (err) res.status(404).send('File not found');
+  });
+});
+
+// Remove conflicting express.static for uploads
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // --- Serve frontend build if needed ---
 app.use(express.static(path.join(__dirname, 'dist')));
@@ -65,4 +80,5 @@ app.use((err, req, res, next) => {
   });
 });
 
+// --- Start Server ---
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
