@@ -12,7 +12,7 @@ import WishList from "./pages/HeaderLinks/wishList";
 import ProductDetails from "./pages/navLink/productsDetails";
 import About from "./pages/navLink/About";
 import Contact from "./pages/navLink/Contact";
-
+import Checkout from "./pages/HeaderLinks/Order/checkout";
 // Admin panel
 import AdminLayout from "./components/Layout/adminLayout.jsx";
 import AdminDashboard from "./pages/admin/dashboard.jsx";
@@ -24,6 +24,8 @@ import Profile from "./pages/HeaderLinks/profile";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { fetchCurrentUser } from "./store/auth-slice"; // adjust path
+import { Check } from "lucide-react";
+import OrderHistory from "./pages/HeaderLinks/Order/orderHistory";
 
 // PrivateRoute wrapper
 // const PrivateRoute = ({ children, user, role }) => {
@@ -60,6 +62,8 @@ function App() {
           <Route path = "/contact" element={<Contact/>}/>
           <Route path = "/cart" element={<CartPage/>}/>
           <Route path= "/profile" element={<Profile/>}/>
+          <Route path="/cart/checkout" element={<Checkout/>}/>
+          <Route path="/order-history" element={<OrderHistory/>} />
 
 
        </Route>

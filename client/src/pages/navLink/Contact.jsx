@@ -20,6 +20,8 @@ const Contact = () => {
   };
 
   return (
+            <div className="m-6 border-2 border-gray-500/30 shadow-xl p-6">
+
     <div className="min-h-screen bg-gradient-to-br from-gray-200 via-black- to-gray-50 flex items-center justify-center p-6">
      
       <div className="max-w-6xl w-full bg-white/30 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl p-10 flex flex-col lg:flex-row gap-10">
@@ -116,6 +118,8 @@ const Contact = () => {
           </p>
         </div>
       </div>
+    </div>
+
     </div>
   );
 };

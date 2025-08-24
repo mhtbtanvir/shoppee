@@ -21,6 +21,7 @@ const Header = () => {
 
   const handleLogout = () => {
     dispatch(logout());
+
     navigate("/homepage"); // back to homepage
   };
   
@@ -51,7 +52,8 @@ const CartIcon = () => {
 const iconLinks = [
   { href: "/wishlist", icon: <CiHeart className="h-6 w-6" />, text: "Wishlist" },
   { href: "/cart", icon: "cart", text: "Cart" }, // special case
-  { href: "/profile", icon: <CiUser className="h-6 w-6" />, text: "Profile" },
+  { href: "/profile", icon: <CiUser className="h-6 w-6" />, text: "Admin" },
+  {href:"/order-history",icon:<IoBagHandleSharp className="h-6 w-6" />,text:"Order History"},
 ];
 
 
@@ -71,7 +73,8 @@ const iconLinks = [
   {/* Mobile Left Section */}
     {/* Mobile Home Icon */}
     <Link
-      onClick={() => setMobileMenuOpen(false)}
+      onClick={() =>
+         setMobileMenuOpen(false)}
       to="/homepage"
       className="flex flex-col items-center justify-center gap-1 text-gray-700 hover:text-yellow-500 transition-colors"
     >
@@ -147,21 +150,29 @@ const iconLinks = [
         {isAuthenticated ? (
           <div className="flex flex-col items-center gap-2">
             <span className="text-gray-700">Hi, {user?.name || "User"}</span>
-            <button onClick={handleLogout} className="text-red-600 hover:text-red-800">
-              Logout
+            <button 
+            onClick={() => {
+              setMobileMenuOpen(false);
+              handleLogout();
+            }}
+
+          
+             
+             className="text-red-600 hover:text-red-800">
+              LOGOUT
             </button>
           </div>
         ) : (
           <div className="flex justify-center gap-4">
-            <Link to="/auth/login" className="text-gray-700">Login</Link>
+            <Link to="/auth/login" className="text-gray-700">LOGIN</Link>
             <span>|</span>
-            <Link to="/auth/register" className="text-gray-700">Signup</Link>
+            <Link to="/auth/register" className="text-gray-700">SIGNUP</Link>
           </div>
         )}
       </div>
 
       {/* Search (mobile) */}
-      <SearchForm className="mx-auto my-10 w-3/5 " />
+      <SearchForm className="mx-5 my-10 flex justify-center ml-16 " />
 
       {/* Links */}
       <ul className="text-center font-medium">

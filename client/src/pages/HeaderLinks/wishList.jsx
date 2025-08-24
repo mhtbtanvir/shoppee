@@ -103,7 +103,7 @@ const Wishlist = () => {
   };
 
   return (
-    <div className="m-6 border border-black shadow-lg p-6">
+        <div className="m-6 border-2 border-gray-500/30 shadow-xl p-6">
         <div className="absolute m-6 z-50">
                  <button
                       onClick={() => navigate(-1)}
@@ -114,9 +114,9 @@ const Wishlist = () => {
                       
                     </button>
             </div>
-      <h1 className="text-4xl font-bold text-gray-800 text-center mb-6">
-        Your Wishlist
-      </h1>
+      <h1 className="text-4x font-prata flex justify-center items-center pb-5 font-extrabold text-gray-900 tracking-tight">
+      WishList
+    </h1>
 
       {loading ? (
         <p className="text-center text-gray-700 font-semibold">Loading...</p>

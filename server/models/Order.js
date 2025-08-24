@@ -1,54 +1,39 @@
-const mongoose = require('mongoose');
+// models/order.js
+const mongoose = require("mongoose");
 
-const orderSchema = new mongoose.Schema(
+const orderSchema = mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     products: [
       {
-        product: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Product',
-          required: true,
-        },
-        quantity: { type: Number, required: true, min: 1 },
+        product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+        quantity: { type: Number, required: true },
         price: { type: Number, required: true },
-        color: { type: String },
-        size: { type: String },
+        color: String,
+        size: String,
       },
     ],
-    totalPrice: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
+    totalPrice: { type: Number, required: true },
     shippingAddress: {
-      fullName: { type: String, required: true },
-      address: { type: String, required: true },
-      city: { type: String, required: true },
-      postalCode: { type: String, required: true },
-      country: { type: String, required: true },
+      fullName: String,
+      address: String,
+      city: String,
+      postalCode: String,
+      country: String,
     },
-    paymentMethod: {
-      type: String,
-      enum: ['cod', 'card', 'paypal', 'stripe'],
-      default: 'cod',
+    paymentMethod: { type: String, required: true, enum: ["cod", "card", "paypal", "stripe"] },
+    cardDetails: {
+      number: String,
+      name: String,
+      date: String,
+      cvc: String,
     },
-    paymentStatus: {
-      type: String,
-      enum: ['pending', 'paid', 'failed', 'refunded'],
-      default: 'pending',
-    },
-    status: {
-      type: String,
-      enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
-      default: 'pending',
-    },
+    status: { type: String, default: "Pending" },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model('Order', orderSchema);
+// ✅ Avoid OverwriteModelError
+const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);
+
+module.exports = Order;

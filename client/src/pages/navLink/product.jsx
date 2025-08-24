@@ -128,19 +128,20 @@ const Product = () => {
   };
 
   return (
-    <div className="m-6 border-2 border-black shadow-lg p-6">
+    <div className="m-6 border-2 border-gray-500/70 shadow-lg p-6">
          <button
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 text-gray-700 hover:text-gray-900 mb-6"
       >
         <IoArrowBackOutline className="w-6 h-6" />
-        <span className="font-medium">Back </span>
+        <span className="font-medium"> </span>
       </button>
       {/* Heading */}
-      <div className="text-center mb-6 border-b-2 border-gray-100   pb-4">
-        <h1 className="text-4xl font-prata font-bold text-gray-800">
+      <div className="text-center  border-b-2 border-gray-100   pb-4">
+        <h1 className="text-3x   font-prata flex justify-center items-center pb-8 -mt-14  text-gray-900 tracking-tight">
           {categoryFromQuery ? `${categoryFromQuery} Products` : "Our Products"}
         </h1>
+      
       </div>
 
       {/* Filter Component */}

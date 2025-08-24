@@ -46,6 +46,7 @@ app.use(cors({
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/orders', require('./routes/orderRoutes.js'));
 
 // --- Health Check ---
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));

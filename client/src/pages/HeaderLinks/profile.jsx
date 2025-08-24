@@ -14,6 +14,9 @@ const Profile = () => {
   };
 
   return (
+
+            <div className="m-6 border-2 border-gray-500/30 shadow-xl p-6">
+
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-pink-50 to-white p-6">
       <div className="bg-white/90 backdrop-blur-md shadow-2xl rounded-3xl p-12 max-w-xl w-full text-center space-y-8 border border-gray-200">
         {/* Header */}
@@ -51,6 +54,7 @@ const Profile = () => {
           © 2025 Your Company. All rights reserved.
         </p>
       </div>
+    </div>
     </div>
   );
 };

@@ -91,6 +91,8 @@ exports.updateProductAdmin = async (req, res) => {
 // @desc   Delete a product
 // @route  DELETE /api/admin/products/:id
 // @access Admin
+//admin has another controllerpage
+
 exports.deleteProductAdmin = async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
@@ -236,3 +238,37 @@ exports.addReview = asyncHandler(async (req, res) => {
     review: product.review,
   });
 });
+
+
+// exports.placeOrder = asyncHandler(async (req, res) => {
+//   const { products, totalPrice, shippingAddress, paymentMethod } = req.body;
+
+//   if (!products || products.length === 0) {
+//     res.status(400);
+//     throw new Error("No products in the order");
+//   }
+
+//   if (!shippingAddress) {
+//     res.status(400);
+//     throw new Error("Shipping address is required");
+//   }
+
+//   const order = new Order({
+//     user: req.user._id,
+//     products: products.map((item) => ({
+//       product: item.product,
+//       quantity: item.quantity,
+//       price: item.price,
+//       color: item.color || null,
+//       size: item.size || null,
+//     })),
+//     totalPrice,
+//     shippingAddress,
+//     paymentMethod: paymentMethod || "cod", // Default to Cash on Delivery
+//   });
+
+//   const createdOrder = await order.save();
+//   res.status(201).json(createdOrder);
+// });
+
+

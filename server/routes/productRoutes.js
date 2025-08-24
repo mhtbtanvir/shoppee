@@ -10,6 +10,7 @@ const {
   getProductsByCategory,
   toggleLike,
   addReview,
+ 
 
   getWishlist, // new controller function
 } = require("../controllers/productController");
@@ -20,6 +21,10 @@ router.get("/", asyncHandler(getProducts));
 router.get("/featured", asyncHandler(getFeaturedProducts));
 router.get("/category/:category", asyncHandler(getProductsByCategory));
 router.post("/:id/like", protect, asyncHandler(toggleLike));
+
+
+
+
 
 router.get("/:id", asyncHandler(getProductById));
 

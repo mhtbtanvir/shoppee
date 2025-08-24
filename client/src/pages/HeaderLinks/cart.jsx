@@ -3,17 +3,27 @@ import { removeFromCart, decreaseQuantity, addToCart, clearCart } from "@/store/
 import { ShoppingBag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { IoArrowBackOutline } from "react-icons/io5";
+import { selectAuth } from "../../store/auth-slice";
+
 
 const CartPage = () => {
   const { items, totalAmount } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { isAuthenticated} = useSelector(selectAuth); // 👈 from Redux
+  
+const handleCheckout = () => {
+  if (isAuthenticated) {
+    navigate("/cart/checkout");
+  } else {
+    navigate("/auth/login");
+  }
+};
 
-  const handleCheckout = () => {
-    navigate("/checkout");
-  };
 
   return (
+            <div className="m-6 border-2 border-gray-500/30 shadow-xl p-6">
+
     <div className="max-w-5xl mx-auto p-6">
           <button
         onClick={() => navigate(-1)}
@@ -104,13 +114,15 @@ const CartPage = () => {
                 onClick={handleCheckout}
                 className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 px-5 py-2 rounded-lg shadow-md flex items-center gap-2 hover:from-yellow-500 hover:to-yellow-600 transition"
               >
-                <ShoppingBag className="w-5 h-5" />
+                 <ShoppingBag className="w-5 h-5" />
+
                 Proceed to Checkout
               </button>
             </div>
           </div>
         </>
       )}
+    </div>
     </div>
   );
 };
