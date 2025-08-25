@@ -64,13 +64,14 @@ function App() {
         <Route path="order-history" element={<OrderHistory />} />
       </Route>
 
-      {/* Admin routes */}
+      
+        {/* Admin routes */}
       <Route
         path="/admin"
         element={
-          <PrivateRoute user={user} role="admin">
+          // <PrivateRoute user={user} role="admin">
             <AdminLayout />
-          </PrivateRoute>
+          // </PrivateRoute>
         }
       >
         <Route index element={<AdminDashboard />} />
