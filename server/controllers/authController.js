@@ -120,13 +120,6 @@ res.cookie("token", token, {
   sameSite: "None",    // required for cross-origin cookies
   maxAge: 24*60*60*1000,
 });
-// res.cookie('token', token, {
-//   httpOnly: true,
-//   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // lax for local dev
-//   secure: process.env.NODE_ENV === 'production', // only true in production
-//   maxAge: 24 * 60 * 60 * 1000, // 1 day
-// });
-
 
 res.json({ message: 'Logged in successfully', user: { name: user.name, email } });
 } catch (err) {
@@ -246,30 +239,20 @@ const getCurrentUser = async (req, res) => {
 // POST /api/auth/logout
 const logoutUser = async (req, res) => {
   try {
-    res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,        // must be true in production HTTPS
-  sameSite: "None",    // required for cross-origin cookies
-  maxAge: 24*60*60*1000,
-});
-    // Clear the token cookie
-    // res.cookie('token', '', {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === 'production',
-    //   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    //   expires: new Date(0), // expire immediately browser session
-    // });
-
-    // Optional: delete any session in Redis if used
-    if (req.user?._id && redisClient) {
-      await redisClient.del(`session:${req.user._id}`);
-    }
+    // Clear the cookie by setting it to empty and expiring immediately
+    res.cookie("token", "", {
+      httpOnly: true,
+      secure: true,       // must be true in production HTTPS
+      sameSite: "None",   // required for cross-origin cookies
+      expires: new Date(0),
+    });
 
     res.status(200).json({ message: 'Logged out successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Failed to logout' });
   }
 };
+
 
 
 
