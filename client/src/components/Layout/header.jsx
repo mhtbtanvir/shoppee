@@ -11,7 +11,7 @@ import SearchForm from "./searchForm";
 import { ShoppingCart } from "lucide-react";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { AiOutlineHome } from "react-icons/ai";
-import { logoutUser } from "../../store/auth-slice";
+import axios from "axios";
 const Header = () => {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -20,12 +20,26 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    dispatch(logoutUser());
+  const handleLogout = async () => {
+  try {
+    await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/auth/logout`,
+      {},
+      { withCredentials: true }
+    );
+  } catch (err) {
+    console.log(err);
+  } finally {
+    // Clear Redux state
+    dispatch(logout());
 
-    navigate("/"); // back to homepage
-  };
-  
+    // ✅ Clear localStorage
+    localStorage.removeItem("user");
+
+    // Redirect to login
+    navigate("/auth/login");
+  }
+};
 
 
 const CartIcon = () => {

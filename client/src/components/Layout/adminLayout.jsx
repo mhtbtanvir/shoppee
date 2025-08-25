@@ -3,6 +3,7 @@ import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { FiMenu, FiHome, FiBox } from "react-icons/fi";
 import {  useDispatch } from "react-redux";
 import {  logout } from "../../store/auth-slice";
+import axios from "axios";
 const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,11 +35,26 @@ const AdminLayout = () => {
     validateAdmin();
   }, []);
 const dispatch = useDispatch();
- const handleLogout = () => {
-  
-     dispatch(logout()); // clear Redux auth state
-     navigate("/auth/login");
-   };
+const handleLogout = async () => {
+  try {
+    await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/auth/logout`,
+      {},
+      { withCredentials: true }
+    );
+  } catch (err) {
+    console.log(err);
+  } finally {
+    // Clear Redux state
+    dispatch(logout());
+
+    // ✅ Clear localStorage
+    localStorage.removeItem("user");
+
+    // Redirect to login
+    navigate("/auth/login");
+  }
+};
   const isActive = (path) => location.pathname === path;
 
   if (loading) {
