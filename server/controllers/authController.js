@@ -85,12 +85,18 @@ const createUser = async (req, res) => {
     await redisClient.del(redisKey);
 
 const token = signToken(user._id, user.role);
-res.cookie('token', token, {
+res.cookie("token", token, {
   httpOnly: true,
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // lax for local dev
-  secure: process.env.NODE_ENV === 'production', // only true in production
-  maxAge: 24 * 60 * 60 * 1000, // 1 day
+  secure: true,        // must be true in production HTTPS
+  sameSite: "None",    // required for cross-origin cookies
+  maxAge: 24*60*60*1000,
 });
+// res.cookie('token', token, {
+//   httpOnly: true,
+//   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // lax for local dev
+//   secure: process.env.NODE_ENV === 'production', // only true in production
+//   maxAge: 24 * 60 * 60 * 1000, // 1 day
+// });
 
 
 res.status(201).json({ message: 'User registered successfully', user: { name, email, role } });
@@ -108,12 +114,18 @@ const loginUser = async (req, res) => {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 const token = signToken(user._id, user.role);
-res.cookie('token', token, {
+res.cookie("token", token, {
   httpOnly: true,
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // lax for local dev
-  secure: process.env.NODE_ENV === 'production', // only true in production
-  maxAge: 24 * 60 * 60 * 1000, // 1 day
+  secure: true,        // must be true in production HTTPS
+  sameSite: "None",    // required for cross-origin cookies
+  maxAge: 24*60*60*1000,
 });
+// res.cookie('token', token, {
+//   httpOnly: true,
+//   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // lax for local dev
+//   secure: process.env.NODE_ENV === 'production', // only true in production
+//   maxAge: 24 * 60 * 60 * 1000, // 1 day
+// });
 
 
 res.json({ message: 'Logged in successfully', user: { name: user.name, email } });
@@ -234,13 +246,19 @@ const getCurrentUser = async (req, res) => {
 // POST /api/auth/logout
 const logoutUser = async (req, res) => {
   try {
+    res.cookie("token", token, {
+  httpOnly: true,
+  secure: true,        // must be true in production HTTPS
+  sameSite: "None",    // required for cross-origin cookies
+  maxAge: 24*60*60*1000,
+});
     // Clear the token cookie
-    res.cookie('token', '', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      expires: new Date(0), // expire immediately browser session
-    });
+    // res.cookie('token', '', {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === 'production',
+    //   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    //   expires: new Date(0), // expire immediately browser session
+    // });
 
     // Optional: delete any session in Redis if used
     if (req.user?._id && redisClient) {
