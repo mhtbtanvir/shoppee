@@ -29,9 +29,15 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // --- CORS: permissive ---
+const allowedOrigins = [
+  "https://shoppee-psi.vercel.app", // production frontend (Vercel)
+  "http://localhost:5173",          // local frontend (Vite default)
+            // local frontend (CRA fallback)
+];
+
 app.use(cors({
-  origin: 'https://shoppee-psi.vercel.app', // allow all origins
-  credentials: true,
+  origin: allowedOrigins,
+  credentials: true,  // allow cookies / auth headers
 }));
 
 // --- Helmet: permissive ---

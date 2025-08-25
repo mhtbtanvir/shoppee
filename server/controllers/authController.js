@@ -9,6 +9,19 @@ const redisClient = require('../utils/redisClient');
 const signToken = (id, role) =>
   jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
+const sendToken = (res, user) => {
+  const token = signToken(user._id, user.role);
+
+  const isProd = process.env.NODE_ENV === 'production';
+
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: isProd,                   // true in prod HTTPS
+    sameSite: isProd ? 'none' : 'lax', // none in prod, lax in dev
+    maxAge: 24 * 60 * 60 * 1000,     // 1 day
+  });
+};
+
 const OTP_TTL_SECONDS = 5 * 60; // 5 minutes
 
 // --- Helper: generate 6-digit OTP ---
@@ -41,6 +54,7 @@ const sendRegistrationOTP = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+// server/controllers/authController.js
 
 // --- Registration Step 2: Verify OTP and create user ---
 const createUser = async (req, res) => {
@@ -73,10 +87,11 @@ const createUser = async (req, res) => {
 const token = signToken(user._id, user.role);
 res.cookie('token', token, {
   httpOnly: true,
-  sameSite: 'none',  // allows cross-site cookies
-  secure: true,      // HTTPS only, required for Vercel <-> Render
-  maxAge: 24 * 60 * 60 * 1000, // 1 day (optional)
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // lax for local dev
+  secure: process.env.NODE_ENV === 'production', // only true in production
+  maxAge: 24 * 60 * 60 * 1000, // 1 day
 });
+
 
 res.status(201).json({ message: 'User registered successfully', user: { name, email, role } });
 } catch (err) {
@@ -95,10 +110,11 @@ const loginUser = async (req, res) => {
 const token = signToken(user._id, user.role);
 res.cookie('token', token, {
   httpOnly: true,
-  sameSite: 'none',  // allows cross-site cookies
-  secure: true,      // HTTPS only
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // lax for local dev
+  secure: process.env.NODE_ENV === 'production', // only true in production
   maxAge: 24 * 60 * 60 * 1000, // 1 day
 });
+
 
 res.json({ message: 'Logged in successfully', user: { name: user.name, email } });
 } catch (err) {
@@ -192,21 +208,53 @@ const resetPassword = async (req, res) => {
 
 
 // GET /api/auth/me
+// GET /api/auth/me
+// GET /api/auth/me
 const getCurrentUser = async (req, res) => {
-  // If using JWT in cookies
-  if (!req.user) {
-    res.status(401);
-    throw new Error("Not authenticated");
-  }
+  try {
+    // req.user should be attached by the protect middleware
+    if (!req.user) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
 
-  const user = await User.findById(req.user._id).select("-password"); // exclude password
-  if (!user) {
-    res.status(404);
-    throw new Error("User not found");
-  }
+    // Only send necessary fields
+    const userData = {
+      name: req.user.name,
+      email: req.user.email,
+      role: req.user.role,
+    };
 
-  res.status(200).json({ user });
+    res.status(200).json({ user: userData });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to get current user" });
+  }
 };
+
+// POST /api/auth/logout
+const logoutUser = async (req, res) => {
+  try {
+    // Clear the token cookie
+    res.cookie('token', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      expires: new Date(0), // expire immediately browser session
+    });
+
+    // Optional: delete any session in Redis if used
+    if (req.user?._id && redisClient) {
+      await redisClient.del(`session:${req.user._id}`);
+    }
+
+    res.status(200).json({ message: 'Logged out successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to logout' });
+  }
+};
+
+
+
 
 module.exports = {
   sendRegistrationOTP,
@@ -216,4 +264,5 @@ module.exports = {
   verifyResetOTP,
   resetPassword,
   getCurrentUser,
+  logoutUser
 };

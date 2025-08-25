@@ -29,7 +29,7 @@ const AddToCartButton = ({ product, selectedColor, selectedSize }) => {
       className={`w-full py-2 rounded-lg font-semibold shadow transition-all duration-300 ${
         added
           ? "bg-green-500 text-white"
-          : "bg-yellow-500 text-white hover:bg-yellow-600"
+          : "bg-yellow-400/90 text-white hover:bg-yellow-600"
       }`}
     >
       {added ? "✓ Added to Cart" : "Add to Cart"}

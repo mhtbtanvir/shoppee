@@ -13,6 +13,7 @@ const {
   verifyResetOTP,
   resetPassword,
   getCurrentUser,
+  logoutUser
 } = require('../controllers/authController');
 
 // Registration with OTP
@@ -26,5 +27,7 @@ router.post('/login', asyncHandler(loginUser));
 router.post('/forgot-password/send-otp', asyncHandler(sendResetOTP));
 router.post('/forgot-password/verify-otp', asyncHandler(verifyResetOTP));
 router.post('/recreate-password/reset', asyncHandler(resetPassword));
-router.get('/me', protect, asyncHandler(getCurrentUser));
+router.post('/logout', protect, asyncHandler(logoutUser));
+
+router.get("/me", protect, asyncHandler(getCurrentUser));
 module.exports = router;

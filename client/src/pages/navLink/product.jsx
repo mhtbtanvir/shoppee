@@ -21,6 +21,7 @@ const Product = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  
   // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {

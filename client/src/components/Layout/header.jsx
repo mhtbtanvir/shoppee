@@ -11,6 +11,7 @@ import SearchForm from "./searchForm";
 import { ShoppingCart } from "lucide-react";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { AiOutlineHome } from "react-icons/ai";
+import { logoutUser } from "../../store/auth-slice";
 const Header = () => {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -20,7 +21,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(logoutUser());
 
     navigate("/"); // back to homepage
   };

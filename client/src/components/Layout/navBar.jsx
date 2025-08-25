@@ -7,25 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { selectAuth, logout } from "../../store/auth-slice";
 import { LogOut, User, LogIn, UserPlus } from "lucide-react"; // icons  
-/**
- * The Navbar component renders a navigation bar with links to home, catalog, about, and contact pages.
- * It also renders a categories dropdown menu and authentication links (login/logout).
- * The categories dropdown menu fetches categories from the server and allows the user to select a category.
- * The authentication links are conditionally rendered based on the user's authentication status.
- * If the user is authenticated, the links are rendered as "Hi, <username>" and "Logout".
- * If the user is not authenticated, the links are rendered as "Login" and "Sign Up".
- * The Navbar component uses the `useSelector` hook to access the authentication state from the Redux store.
- * The Navbar component uses the `useDispatch` hook to dispatch the `logout` action to clear the authentication state.
- * The Navbar component uses the `useNavigate` hook to navigate to the login page when the user logs out.
- * The Navbar component uses the `useState` hook to store the categories, selected category, and desktop menu open state.
- * The Navbar component uses the `useEffect` hook to fetch the categories from the server and update the categories state.
- * The Navbar component renders the categories dropdown menu and authentication links conditionally based on the desktop menu open state.
- * The Navbar component renders the categories list and submenu conditionally based on the selected category state.
- * The Navbar component renders a close button conditionally based on the desktop menu open state.
- * The Navbar component uses the `Link` component from `react-router-dom` to render links to the home, catalog, about, and contact pages.
- * The Navbar component uses the `button` element to render the categories button and close button.
- * The Navbar component uses the `IoMdArrowDropright` and `IoMdClose` icons from `react-icons/io` to render the categories button and close button.
- */
+
 const Navbar = () => {
   const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -83,10 +65,17 @@ const Navbar = () => {
     setSelectedCategory(null);
   };
 
-  const handleLogout = () => {
-    dispatch(logout()); // clear Redux auth state
+const handleLogout = async () => {
+  try {
+    await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {}, { withCredentials: true });
+  } catch (err) {
+    console.log(err);
+  } finally {
+    dispatch(logout()); // clears Redux state
     navigate("/auth/login");
-  };
+  }
+};
+
 
   return (
     <>
@@ -116,79 +105,48 @@ const Navbar = () => {
           </div>
 
           {/* Auth Links */}
-          {/* <div className="ml-auto flex gap-4 px-5">
+          <div className="ml-auto flex items-center gap-6 px-6 font-medium">
             {isAuthenticated ? (
               <>
-                <span className="font-light text-white">
-                  Hi, {user?.name || "User"}
-                </span>
+                {/* Greeting with user icon */}
+                <div className="flex items-center gap-2 text-white/90 hover:text-yellow-400 transition-colors duration-150">
+                  <User className="w-5 h-5" />
+                  <span className="tracking-wide">
+                    <span className="font-semibold">{user?.name || "User"}</span>
+                  </span>
+                </div>
+
+                {/* Logout button */}
                 <button
                   onClick={handleLogout}
-                  className="font-light text-white hover:text-yellow-400 hover:underline duration-100"
+                  className="flex items-center gap-2 text-white/90 hover:text-red-400 transition-colors duration-150"
                 >
-                  Logout
+                  <LogOut className="w-5 h-5" />
+                  <span className="tracking-wide">Logout</span>
                 </button>
               </>
             ) : (
               <>
+                {/* Login link */}
                 <Link
                   to="/auth/login"
-                  className="font-light text-white hover:text-yellow-400 hover:underline duration-100"
+                  className="flex items-center gap-2 text-white/90 hover:text-yellow-400 transition-colors duration-150"
                 >
-                  Login
+                  <LogIn className="w-5 h-5" />
+                  <span className="tracking-wide">Login</span>
                 </Link>
-                <span className="text-white">|</span>
+
+                {/* Register link */}
                 <Link
                   to="/auth/register"
-                  className="font-light text-white hover:text-yellow-400 hover:underline duration-100"
+                  className="flex items-center gap-2 text-white/90 hover:text-yellow-400 transition-colors duration-150"
                 >
-                  Sign Up
+                  <UserPlus className="w-5 h-5" />
+                  <span className="tracking-wide">Sign Up</span>
                 </Link>
               </>
             )}
-          </div> */}
-          <div className="ml-auto flex items-center gap-6 px-6 font-medium">
-  {isAuthenticated ? (
-    <>
-      {/* Greeting with user icon */}
-      <div className="flex items-center gap-2 text-white/90 hover:text-yellow-400 transition-colors duration-150">
-        <User className="w-5 h-5" />
-        <span className="tracking-wide">
-          <span className="font-semibold">{user?.name || "User"}</span>
-        </span>
-      </div>
-
-      {/* Logout button */}
-      <button
-        onClick={handleLogout}
-        className="flex items-center gap-2 text-white/90 hover:text-red-400 transition-colors duration-150"
-      >
-        <LogOut className="w-5 h-5" />
-        <span className="tracking-wide">Logout</span>
-      </button>
-    </>
-  ) : (
-    <>
-      {/* Login link */}
-      <Link
-        to="/auth/login"
-        className="flex items-center gap-2 text-white/90 hover:text-yellow-400 transition-colors duration-150"
-      >
-        <LogIn className="w-5 h-5" />
-        <span className="tracking-wide">Login</span>
-      </Link>
-
-      {/* Register link */}
-      <Link
-        to="/auth/register"
-        className="flex items-center gap-2 text-white/90 hover:text-yellow-400 transition-colors duration-150"
-      >
-        <UserPlus className="w-5 h-5" />
-        <span className="tracking-wide">Sign Up</span>
-      </Link>
-    </>
-  )}
-</div>
+          </div>
         </div>
       </nav>
 

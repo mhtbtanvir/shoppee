@@ -1,11 +1,18 @@
-import { Route, Routes, Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Route, Routes } from "react-router-dom";
+import axios from "axios";
+
+import PrivateRoute from "./components/PrivateRoute";
 import AuthLayout from "./components/auth/authLayout";
+import HomeLayout from "./components/Layout/homeLayout";
+import AdminLayout from "./components/Layout/adminLayout";
+
+// pages ...
 import Login from "./pages/auth/login";
 import Register from "./pages/auth/register";
 import ForgotPassword from "./pages/auth/forgotPassword";
 import OTP from "./pages/auth/otp";
 import RecreatePassword from "./pages/auth/recreatePassword";
-import HomeLayout from "./components/Layout/homeLayout";
 import HomePage from "./pages/homepage/homePage";
 import Product from "./pages/navLink/product";
 import WishList from "./pages/HeaderLinks/wishList";
@@ -13,32 +20,20 @@ import ProductDetails from "./pages/navLink/productsDetails";
 import About from "./pages/navLink/About";
 import Contact from "./pages/navLink/Contact";
 import Checkout from "./pages/HeaderLinks/Order/checkout";
-// Admin panel
-import AdminLayout from "./components/Layout/adminLayout.jsx";
-import AdminDashboard from "./pages/admin/dashboard.jsx";
-import AdminProducts from "./pages/admin/products.jsx";
 import CartPage from "./pages/HeaderLinks/cart";
 import Profile from "./pages/HeaderLinks/profile";
-
-
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { fetchCurrentUser } from "./store/auth-slice"; // adjust path
-import { Check } from "lucide-react";
 import OrderHistory from "./pages/HeaderLinks/Order/orderHistory";
-
-// PrivateRoute wrapper
-// const PrivateRoute = ({ children, user, role }) => {
-//   if (!user) return <Navigate to="/auth/login" replace />;
-//   if (role && user.role !== role) return <Navigate to="/" replace />;
-//   return children;
-// };
+import AdminDashboard from "./pages/admin/dashboard";
+import AdminProducts from "./pages/admin/products";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCurrentUser,selectAuth } from "./store/auth-slice";
 
 function App() {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
+  const { user } = useSelector(selectAuth);
 
-  useEffect(() => {
-    dispatch(fetchCurrentUser());
+    useEffect(() => {
+    dispatch(fetchCurrentUser()); // fetch user from /me endpoint
   }, [dispatch]);
 
   return (
@@ -54,35 +49,30 @@ function App() {
 
       {/* Home routes */}
       <Route path="/" element={<HomeLayout />}>
-          <Route path="" element={<HomePage />} />
-          <Route path="products" element={<Product />} />
-          <Route path="wishlist" element={<WishList />} /> 
-          <Route path="/productsDetails/:id" element={<ProductDetails />} />
-          <Route path = "/about" element={<About/>}/>
-          <Route path = "/contact" element={<Contact/>}/>
-          <Route path = "/cart" element={<CartPage/>}/>
-          <Route path= "/profile" element={<Profile/>}/>
-          <Route path="/cart/checkout" element={<Checkout/>}/>
-          <Route path="/order-history" element={<OrderHistory/>} />
-
-
-       </Route>
+        <Route index element={<HomePage />} />
+        <Route path="products" element={<Product />} />
+        <Route path="wishlist" element={<WishList />} />
+        <Route path="productsDetails/:id" element={<ProductDetails />} />
+        <Route path="about" element={<About />} />
+        <Route path="contact" element={<Contact />} />
+        <Route path="cart" element={<CartPage />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="cart/checkout" element={<Checkout />} />
+        <Route path="order-history" element={<OrderHistory />} />
+      </Route>
 
       {/* Admin routes */}
       <Route
         path="/admin"
         element={
-          // <PrivateRoute user={user} role="admin">
+          <PrivateRoute user={user} role="admin">
             <AdminLayout />
-          // </PrivateRoute>
+          </PrivateRoute>
         }
       >
         <Route index element={<AdminDashboard />} />
         <Route path="products" element={<AdminProducts />} />
       </Route>
-
-      {/* Optional 404 */}
-      {/* <Route path="*" element={<NotFoundPage />} /> */}
     </Routes>
   );
 }

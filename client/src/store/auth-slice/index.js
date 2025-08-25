@@ -26,10 +26,27 @@ export const fetchCurrentUser = createAsyncThunk(
   }
 );
 
+export const logoutUser = createAsyncThunk(
+  "auth/logoutUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/auth/logout`,
+        {},
+        { withCredentials: true }
+      );
+      return res.data.message; // "Logged out successfully"
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || err.message);
+    }
+  }
+);
+
 // --- Slice ---
 const authSlice = createSlice({
   name: 'auth',
   initialState,
+  
   reducers: {
     loginRequest: (state) => {
       state.loading = true;
@@ -89,6 +106,22 @@ const authSlice = createSlice({
       .addCase(fetchCurrentUser.rejected, (state, action) => {
         state.isAuthenticated = false;
         state.user = null;
+        state.loading = false;
+        state.error = action.payload;
+      })
+        .addCase(logoutUser.fulfilled, (state) => {
+        // Clear state when logout succeeds
+        state.isAuthenticated = false;
+        state.user = null;
+        state.role = null;
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        // Use same logic as fetchCurrentUser rejected
+        state.isAuthenticated = false;
+        state.user = action.payload;
+        state.role = action.payload;
         state.loading = false;
         state.error = action.payload;
       });
