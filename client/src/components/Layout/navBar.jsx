@@ -5,7 +5,7 @@ import { IoMdArrowDropright, IoMdClose } from "react-icons/io";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { selectAuth, logoutUser } from "../../store/auth-slice";
+import { selectAuth, logout } from "../../store/auth-slice";
 import { LogOut, User, LogIn, UserPlus } from "lucide-react"; // icons  
 
 const Navbar = () => {
@@ -66,10 +66,15 @@ const Navbar = () => {
   };
 
 const handleLogout = async () => {
-  await dispatch(logoutUser());
-  navigate("/auth/login");
+  try {
+    await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {}, { withCredentials: true });
+  } catch (err) {
+    console.log(err);
+  } finally {
+    dispatch(logout()); // clears Redux state
+    navigate("/auth/login");
+  }
 };
-
 
 
   return (

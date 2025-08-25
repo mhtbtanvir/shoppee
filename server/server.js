@@ -30,8 +30,8 @@ app.use(limiter);
 
 // --- CORS: permissive ---
 const allowedOrigins = [
-  "https://shoppee-psi.vercel.app" // production frontend (Vercel)
-           // local frontend (Vite default)
+  "https://shoppee-psi.vercel.app", // production frontend (Vercel)
+  "http://localhost:5173",          // local frontend (Vite default)
             // local frontend (CRA fallback)
 ];
 
@@ -46,44 +46,30 @@ app.use(
     contentSecurityPolicy: false, // disable CSP entirely
   })
 );
-// app.use(
-// //   helmet({
-// //     contentSecurityPolicy: {
-// //       directives: {
-// //         defaultSrc: ["'self'"],
-// //         scriptSrc: ["'self'", "https://cdn.jsdelivr.net"], // allow scripts from CDN
-// //         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-// //         imgSrc: ["'self'", "data:", "https://your-cdn.com"],
-// //         connectSrc: ["'self'", "https://shoppee-sb9u.onrender.com"],
-// //       },
-// //     },
-// //   })
-// // );
 
+// --- Serve uploaded files with permissive headers ---
+app.get('/uploads/:filename', (req, res) => {
+  const options = {
+    root: path.join(__dirname, 'uploads'),
+    headers: {
+      'Access-Control-Allow-Origin': '*', // allow any origin
+      'Cross-Origin-Resource-Policy': 'cross-origin', // allow cross-origin
+    },
+  };
+  const fileName = req.params.filename;
+  res.sendFile(fileName, options, (err) => {
+    if (err) res.status(404).send('File not found');
+  });
+});
 
-// // --- Serve uploaded files with permissive headers ---
-// app.get('/uploads/:filename', (req, res) => {
-//   const options = {
-//     root: path.join(__dirname, 'uploads'),
-//     headers: {
-//       'Access-Control-Allow-Origin': '*', // allow any origin
-//       'Cross-Origin-Resource-Policy': 'cross-origin', // allow cross-origin
-//     },
-//   };
-//   const fileName = req.params.filename;
-//   res.sendFile(fileName, options, (err) => {
-//     if (err) res.status(404).send('File not found');
-//   });
-// });
+// --- Serve frontend build if needed ---
+app.use(express.static(path.join(__dirname, 'dist')));
 
-// // --- Serve frontend build if needed ---
-// app.use(express.static(path.join(__dirname, 'dist')));
-
-// // --- API Routes ---
-// app.use('/api/auth', require('./routes/authRoutes'));
-// app.use('/api/products', require('./routes/productRoutes'));
-// app.use('/api/admin', require('./routes/adminRoutes'));
-// app.use('/api/orders', require('./routes/orderRoutes'));
+// --- API Routes ---
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/products', require('./routes/productRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/orders', require('./routes/orderRoutes'));
 
 // --- Root route ---
 app.get('/', (req, res) => res.send('Shoppee API running 🚀'));

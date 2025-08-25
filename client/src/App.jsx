@@ -1,6 +1,6 @@
-import {  useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
-
+import axios from "axios";
 
 import PrivateRoute from "./components/PrivateRoute";
 import AuthLayout from "./components/auth/authLayout";
@@ -26,22 +26,16 @@ import OrderHistory from "./pages/HeaderLinks/Order/orderHistory";
 import AdminDashboard from "./pages/admin/dashboard";
 import AdminProducts from "./pages/admin/products";
 import { useDispatch, useSelector } from "react-redux";
-import { selectAuth,logout } from "./store/auth-slice";
-import { useNavigate } from "react-router-dom";
+import { fetchCurrentUser,selectAuth } from "./store/auth-slice";
+
 function App() {
   const dispatch = useDispatch();
- const navigate = useNavigate();
+  const { user } = useSelector(selectAuth);
 
-const { user, isAuthenticated } = useSelector(selectAuth);
+    useEffect(() => {
+    dispatch(fetchCurrentUser()); // fetch user from /me endpoint
+  }, [dispatch]);
 
-  // Check Redux state on every render
-   useEffect(() => {
-    if (!isAuthenticated) {
-      dispatch(logout());
-      navigate("/auth/login"); // ✅ use navigate() function
-      console.log("User logged out automatically");
-    }
-  }, [isAuthenticated, dispatch, navigate]);
   return (
     <Routes>
       {/* Auth routes */}

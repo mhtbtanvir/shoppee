@@ -27,7 +27,7 @@ router.post('/login', asyncHandler(loginUser));
 router.post('/forgot-password/send-otp', asyncHandler(sendResetOTP));
 router.post('/forgot-password/verify-otp', asyncHandler(verifyResetOTP));
 router.post('/recreate-password/reset', asyncHandler(resetPassword));
-router.post('/logout', protect, logoutUser);
+router.post('/logout', protect, asyncHandler(logoutUser));
 
-router.get("/me", protect, getCurrentUser);
+router.get("/me", protect, asyncHandler(getCurrentUser));
 module.exports = router;
