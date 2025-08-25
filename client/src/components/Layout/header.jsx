@@ -35,6 +35,7 @@ const Header = () => {
 
     // ✅ Clear localStorage
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
 
     // Redirect to login
     navigate("/auth/login");
