@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Mail, Lock, Loader } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { loginSuccess, loginFailure } from "../../../src/store/auth-slice";
+import { loginUser, loginFailure } from "../../../src/store/auth-slice";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -16,40 +16,22 @@ const Login = () => {
   const [error, setError] = useState(null);
 
   // Handle form submit
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsLoading(true);
+  setError(null);
 
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", // if backend sends cookies
-        body: JSON.stringify({ email, password }),
-      });
+  try {
+    const userData = await dispatch(loginUser({ email, password })).unwrap();
+    // Redux is already updated with user
+    navigate("/"); // redirect after successful login
+  } catch (err) {
+    setError(err);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.message || "Failed to login");
-
-      // ✅ Check whether backend sends user inside { user } or directly
-      const userData = data.user || data;
-
-      // Save user in Redux
-      dispatch(loginSuccess(userData));
-
-      // Redirect
-      navigate("/");
-
-
-    } catch (err) {
-      setError(err.message);
-      dispatch(loginFailure(err.message));
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="w-full px-4 sm:px-6 md:px-8 lg:px-0 flex justify-center items-center min-h-screen">

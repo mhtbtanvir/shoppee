@@ -20,11 +20,20 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    dispatch(logoutUser());
+const handleLogout = async () => {
+  try {
+    const message = await dispatch(logoutUser()).unwrap();
+    console.log(message);
+  } catch (err) {
+    console.error("Logout failed:", err);
+    toast.error(err || "Your session has already expired");
+    dispatch(logout());
+  } finally {
+    navigate("/auth/login");
+  }
+};
 
-    navigate("/"); // back to homepage
-  };
+
   
 
 

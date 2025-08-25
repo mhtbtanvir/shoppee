@@ -63,44 +63,48 @@ const createUser = async (req, res) => {
     const redisKey = `register:${email}`;
     const data = await redisClient.get(redisKey);
 
-    if (!data) return res.status(400).json({ message: 'No pending registration or OTP expired' });
+    if (!data) {
+      return res.status(400).json({ message: "No pending registration or OTP expired" });
+    }
 
     const { name, hashedPassword, otp: storedOtp, otpExpiry } = JSON.parse(data);
 
     if (storedOtp !== otp) {
-      return res.status(400).json({ message: 'Invalid OTP' });
+      return res.status(400).json({ message: "Invalid OTP" });
     }
     if (Date.now() > otpExpiry) {
       await redisClient.del(redisKey);
-      return res.status(400).json({ message: 'OTP expired' });
+      return res.status(400).json({ message: "OTP expired" });
     }
 
-    // Determine role based on email and environment variable
-    // const role = email === process.env.ADMIN_EMAIL ||  ? 'admin' : 'user';
-    const role = (email === process.env.ADMIN_EMAIL || email === "admin@mail.com") ? 'admin' : 'user';
+    const role =
+      email === process.env.ADMIN_EMAIL || email === "admin@mail.com"
+        ? "admin"
+        : "user";
 
-    // Create user with role
     const user = await User.create({ name, email, password: hashedPassword, role });
 
     await redisClient.del(redisKey);
 
-const token = signToken(user._id, user.role);
-res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,        // must be true in production HTTPS
-  sameSite: "None",    // required for cross-origin cookies
-  maxAge: 24*60*60*1000,
-});
-// res.cookie('token', token, {
-//   httpOnly: true,
-//   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // lax for local dev
-//   secure: process.env.NODE_ENV === 'production', // only true in production
-//   maxAge: 24 * 60 * 60 * 1000, // 1 day
-// });
+    const token = signToken(user._id, user.role);
 
+    try {
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+    } catch (cookieErr) {
+      console.error("Cookie setting failed:", cookieErr.message);
+      // don’t throw, just log — still return success with user JSON
+    }
 
-res.status(201).json({ message: 'User registered successfully', user: { name, email, role } });
-} catch (err) {
+    res.status(201).json({
+      message: "User registered successfully",
+      user: { name: user.name, email: user.email, role: user.role },
+    });
+  } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
@@ -111,25 +115,29 @@ const loginUser = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user || !(await user.matchPassword(password))) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
-const token = signToken(user._id, user.role);
-res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,        // must be true in production HTTPS
-  sameSite: "None",    // required for cross-origin cookies
-  maxAge: 24*60*60*1000,
-});
-// res.cookie('token', token, {
-//   httpOnly: true,
-//   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // lax for local dev
-//   secure: process.env.NODE_ENV === 'production', // only true in production
-//   maxAge: 24 * 60 * 60 * 1000, // 1 day
-// });
 
+    const token = signToken(user._id, user.role);
 
-res.json({ message: 'Logged in successfully', user: { name: user.name, email } });
-} catch (err) {
+    try {
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        domain: "shoppee-sb9u.onrender.com", // careful with hardcoding this
+        path: "/",
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+    } catch (cookieErr) {
+      console.error("Cookie setting failed:", cookieErr.message);
+    }
+
+    res.json({
+      message: "Logged in successfully",
+      user: { name: user.name, email: user.email, role: user.role },
+    });
+  } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
@@ -224,12 +232,10 @@ const resetPassword = async (req, res) => {
 // GET /api/auth/me
 const getCurrentUser = async (req, res) => {
   try {
-    // req.user should be attached by the protect middleware
     if (!req.user) {
       return res.status(401).json({ message: "Not authenticated" });
     }
 
-    // Only send necessary fields
     const userData = {
       name: req.user.name,
       email: req.user.email,
@@ -243,14 +249,17 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
+
 // POST /api/auth/logout
 const logoutUser = async (req, res) => {
   try {
-    res.cookie("token", token, {
+    res.cookie("token", "", {
   httpOnly: true,
   secure: true,        // must be true in production HTTPS
   sameSite: "None",    // required for cross-origin cookies
   maxAge: 24*60*60*1000,
+   expires: new Date(0)
+
 });
     // Clear the token cookie
     // res.cookie('token', '', {
