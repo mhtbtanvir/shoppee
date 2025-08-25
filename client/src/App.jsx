@@ -30,12 +30,18 @@ import { selectAuth ,loginSuccess} from "./store/auth-slice";
 
 function App() {
   const dispatch = useDispatch();
-  const { user} = useSelector(selectAuth);
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
+    // 1️⃣ Check if user exists in Redux
     if (user) {
-      // Only dispatch if user exists
       dispatch(loginSuccess(user));
+    } else {
+      // 2️⃣ If not in Redux, check localStorage
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        dispatch(loginSuccess(JSON.parse(storedUser)));
+      }
     }
   }, [dispatch, user]);
 

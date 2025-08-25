@@ -67,15 +67,24 @@ const Navbar = () => {
 
 const handleLogout = async () => {
   try {
-    await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {}, { withCredentials: true });
+    await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/auth/logout`,
+      {},
+      { withCredentials: true }
+    );
   } catch (err) {
     console.log(err);
   } finally {
-    dispatch(logout()); // clears Redux state
+    // Clear Redux state
+    dispatch(logout());
+
+    // ✅ Clear localStorage
+    localStorage.removeItem("user");
+
+    // Redirect to login
     navigate("/auth/login");
   }
 };
-
 
   return (
     <>

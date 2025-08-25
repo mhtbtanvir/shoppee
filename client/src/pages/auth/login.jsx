@@ -39,6 +39,9 @@ const Login = () => {
       // Save user in Redux
       dispatch(loginSuccess(userData));
 
+        // ✅ Save user in localStorage for persistence
+    localStorage.setItem("user", JSON.stringify(userData));
+
       // Redirect
       navigate("/");
 
