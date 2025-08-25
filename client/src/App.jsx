@@ -26,15 +26,18 @@ import OrderHistory from "./pages/HeaderLinks/Order/orderHistory";
 import AdminDashboard from "./pages/admin/dashboard";
 import AdminProducts from "./pages/admin/products";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCurrentUser,selectAuth } from "./store/auth-slice";
+import { selectAuth ,loginSuccess} from "./store/auth-slice";
 
 function App() {
   const dispatch = useDispatch();
-  const { user } = useSelector(selectAuth);
+  const { user} = useSelector(selectAuth);
 
-    useEffect(() => {
-    dispatch(fetchCurrentUser()); // fetch user from /me endpoint
-  }, [dispatch]);
+  useEffect(() => {
+    if (user) {
+      // Only dispatch if user exists
+      dispatch(loginSuccess(user));
+    }
+  }, [dispatch, user]);
 
   return (
     <Routes>

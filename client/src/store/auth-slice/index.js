@@ -121,8 +121,8 @@ const authSlice = createSlice({
       .addCase(logoutUser.rejected, (state, action) => {
         // Use same logic as fetchCurrentUser rejected
         state.isAuthenticated = false;
-        state.user = action.payload;
-        state.role = action.payload;
+        state.user = null;
+        state.role = null;
         state.loading = false;
         state.error = action.payload;
       });
