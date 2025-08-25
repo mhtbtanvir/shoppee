@@ -32,36 +32,17 @@ function App() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
 
-
   useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  }
-}, []); // run only once
-
-  useEffect(() => {
-
-    const token = localStorage.getItem("token");
-    
-    //user needed for authorized tasks. token check is for mobile cookie failure bypass..token is unreliable..can be blocked by browser 
     // 1️⃣ Check if user exists in Redux
-    if (user && token) {
+    if (user) {
       dispatch(loginSuccess(user));
-    } 
-    if (user){
-      dispatch(loginSuccess(user));
-    }
-    if (!user) {
+    } else {
       // 2️⃣ If not in Redux, check localStorage
-    const storedUser = localStorage.getItem("user");
-
-    if (storedUser && token) {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
         dispatch(loginSuccess(JSON.parse(storedUser)));
       }
     }
-   
-
   }, [dispatch, user]);
 
   return (

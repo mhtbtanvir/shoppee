@@ -51,8 +51,6 @@ const handleLogout = async () => {
     // ✅ Clear localStorage
     localStorage.removeItem("user");
 
-    localStorage.removeItem("token");
-
     // Redirect to login
     navigate("/auth/login");
   }

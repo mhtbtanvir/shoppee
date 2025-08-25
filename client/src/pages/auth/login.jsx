@@ -35,16 +35,12 @@ const Login = () => {
 
       // ✅ Check whether backend sends user inside { user } or directly
       const userData = data.user || data;
-       const token = data.token; // backend sends it in res.json
+
       // Save user in Redux
       dispatch(loginSuccess(userData));
 
         // ✅ Save user in localStorage for persistence
     localStorage.setItem("user", JSON.stringify(userData));
-      
-        if (token) {
-      localStorage.setItem("token", token);
-    }
 
       // Redirect
       navigate("/");

@@ -80,11 +80,6 @@ const handleLogout = async () => {
 
     // ✅ Clear localStorage
     localStorage.removeItem("user");
-    //for mobile browsers
-    localStorage.removeItem("token");
-
-
-
 
     // Redirect to login
     navigate("/auth/login");
