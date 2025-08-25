@@ -186,7 +186,7 @@ const authSlice = createSlice({
 
 export const {
   loginRequest,
- 
+ loginSuccess,
   loginFailure,
   logout,
   setResetEmail,
