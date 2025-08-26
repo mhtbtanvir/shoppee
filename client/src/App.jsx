@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import axios from "axios";
-import ScrollToTop from "./components/ScrollToTop";
+import ScrollToTop from "./components/scrollToTop";
 
 import PrivateRoute from "./components/PrivateRoute";
 import AuthLayout from "./components/auth/authLayout";
