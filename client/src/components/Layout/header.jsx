@@ -178,9 +178,13 @@ const iconLinks = [
           </div>
         ) : (
           <div className="flex justify-center gap-4">
-            <Link to="/auth/login" className="text-gray-700">LOGIN</Link>
+            <Link to="/auth/login"
+            onClick={() => setMobileMenuOpen(false)}
+             className="text-gray-700">LOGIN</Link>
             <span>|</span>
-            <Link to="/auth/register" className="text-gray-700">SIGNUP</Link>
+            <Link to="/auth/register" 
+             onClick={() => setMobileMenuOpen(false)}
+            className="text-gray-700">SIGNUP</Link>
           </div>
         )}
       </div>

@@ -5,22 +5,9 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const sendEmail = require('../utils/sendEmail');
 const redisClient = require('../utils/redisClient');
-
+const sendTokenResponse = require('../utils/sendTokenResponse');
 const signToken = (id, role) =>
   jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: '1d' });
-
-const sendToken = (res, user) => {
-  const token = signToken(user._id, user.role);
-
-  const isProd = process.env.NODE_ENV === 'production';
-
-  res.cookie('token', token, {
-    httpOnly: true,
-    secure: isProd,                   // true in prod HTTPS
-    sameSite: isProd ? 'none' : 'lax', // none in prod, lax in dev
-    maxAge: 24 * 60 * 60 * 1000,     // 1 day
-  });
-};
 
 const OTP_TTL_SECONDS = 5 * 60; // 5 minutes
 
@@ -59,11 +46,11 @@ const sendRegistrationOTP = async (req, res) => {
 // --- Registration Step 2: Verify OTP and create user ---
 const createUser = async (req, res) => {
   const { email, otp } = req.body;
+
   try {
     const redisKey = `register:${email}`;
     const data = await redisClient.get(redisKey);
-
-    if (!data) return res.status(400).json({ message: 'No pending registration or OTP expired' });
+    if (!data) return res.status(400).json({ message: "No pending registration or OTP expired" });
 
     const { name, hashedPassword, otp: storedOtp, otpExpiry } = JSON.parse(data);
 
@@ -72,35 +59,16 @@ const createUser = async (req, res) => {
     }
     if (Date.now() > otpExpiry) {
       await redisClient.del(redisKey);
-      return res.status(400).json({ message: 'OTP expired' });
+      return res.status(400).json({ message: "OTP expired" });
     }
 
-    // Determine role based on email and environment variable
-    // const role = email === process.env.ADMIN_EMAIL ||  ? 'admin' : 'user';
-    const role = (email === process.env.ADMIN_EMAIL || email === "admin@mail.com") ? 'admin' : 'user';
-
-    // Create user with role
+    const role = (email === process.env.ADMIN_EMAIL || email === "admin@mail.com") ? "admin" : "user";
     const user = await User.create({ name, email, password: hashedPassword, role });
 
     await redisClient.del(redisKey);
 
-const token = signToken(user._id, user.role);
-res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,        // must be true in production HTTPS
-  sameSite: "None",    // required for cross-origin cookies
-  maxAge: 24*60*60*1000,
-});
-// res.cookie('token', token, {
-//   httpOnly: true,
-//   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // lax for local dev
-//   secure: process.env.NODE_ENV === 'production', // only true in production
-//   maxAge: 24 * 60 * 60 * 1000, // 1 day
-// });
-
-
-res.status(201).json({ message: 'User registered successfully', user: { name, email, role } });
-} catch (err) {
+    sendTokenResponse(user, 201, res); // ✅ cookie + JSON
+  } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
@@ -108,24 +76,19 @@ res.status(201).json({ message: 'User registered successfully', user: { name, em
 // --- Login ---
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
+
   try {
     const user = await User.findOne({ email });
     if (!user || !(await user.matchPassword(password))) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
-const token = signToken(user._id, user.role);
-res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,        // must be true in production HTTPS
-  sameSite: "None",    // required for cross-origin cookies
-  maxAge: 24*60*60*1000,
-});
 
-res.json({ message: 'Logged in successfully', user: { name: user.name, email } });
-} catch (err) {
+    sendTokenResponse(user, 200, res); // ✅ cookie + JSON
+  } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 // --- Password reset step 1: Send OTP & store in Redis ---
 const sendResetOTP = async (req, res) => {
@@ -228,8 +191,8 @@ const getCurrentUser = async (req, res) => {
       email: req.user.email,
       role: req.user.role,
     };
-
-    res.status(200).json({ user: userData });
+    sendTokenResponse(req.user, 200, res);
+    // res.status(200).json({ user: userData });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to get current user" });

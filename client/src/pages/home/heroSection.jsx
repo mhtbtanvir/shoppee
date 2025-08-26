@@ -5,7 +5,7 @@ const HeroSection = () => {
     <div className="flex flex-col   m-6 md:flex-row h-screen md:h-[700px] ">
       {/* Left Section */}
 <div
-  className="relative md:w-1/2 h-96 md:h-full overflow-hidden border-2 border-b-0 md:border-b-2 md:border-r-0 border-gray-500 flex justify-center items-center"
+  className="relative rounded-l-md md:w-1/2 h-96 md:h-full overflow-hidden border-2 border-b-0 md:border-b-2 md:border-r-0 border-gray-500 flex justify-center items-center"
 >
   <div className="text-center space-y-4 md:space-y-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
     
@@ -50,7 +50,7 @@ const HeroSection = () => {
 
 
       {/* Right Section (Image) */}
-   <div className="md:w-1/2 md:h-full h-96 relative overflow-hidden">
+   <div className="md:w-1/2 rounded-r-md md:h-full h-96 relative overflow-hidden">
   {/* Image */}
   <img
     src={heroBg}

@@ -51,34 +51,37 @@ const Register = () => {
 
     setIsLoading(true);
 
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register/send-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ name, email, password }),
-      });
+try {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register/send-otp`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include", // sends cookies if backend sets them
+    body: JSON.stringify({ name, email, password }),
+  });
 
-      const data = await res.json();
+  const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message || "Failed to register");
+  if (!res.ok) {
+    console.error("Registration error:", data); // for debugging
+    throw new Error(data.message || "Failed to register");
+  }
 
-      // Dispatch email and otpMode to Redux here
-      dispatch(setResetEmail(email));
-      dispatch(setOtpMode("register"));
+  // Save email & OTP mode in Redux for next step
+  dispatch(setResetEmail(email));
+  dispatch(setOtpMode("register"));
 
-      setSuccess(true);
-      setName("");
-      setEmail("");
-      setPassword("");
-      setCountdown(8); // Reset countdown for redirect
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
-    }
+  setSuccess(true);
+  setName("");
+  setEmail("");
+  setPassword("");
+  setCountdown(8); // start countdown for redirect
+} catch (err) {
+  console.error(err);
+  setError(err.message);
+} finally {
+  setIsLoading(false);
+}
   };
-
 
   return (
     <div className="w-full px-4 sm:px-6 md:px-8 lg:px-0 flex justify-center items-center min-h-screen">

@@ -16,43 +16,69 @@ const Login = () => {
   const [error, setError] = useState(null);
 
   // Handle form submit
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsLoading(true);
+  setError(null);
 
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", // if backend sends cookies
-        body: JSON.stringify({ email, password }),
-      });
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // ✅ ensures cookie comes back
+      body: JSON.stringify({ email, password }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to login");
 
-      if (!res.ok) throw new Error(data.message || "Failed to login");
+    // ✅ Grab token from login response
+    const authHeader = res.headers.get("Authorization");
+    const headerToken = authHeader?.split(" ")[1];
+    const bodyToken = data.token;
 
-      // ✅ Check whether backend sends user inside { user } or directly
-      const userData = data.user || data;
+    // ✅ Prefer header token if it exists, else fallback to body
+    const token = headerToken || bodyToken;
 
-      // Save user in Redux
-      dispatch(loginSuccess(userData));
+      if (token) {
+        localStorage.setItem("token", token);
+      }
+      if (!res.ok) {
+          localStorage.removeItem("token");
+          throw new Error(data.message || "Failed to login");
+        }
 
-        // ✅ Save user in localStorage for persistence
-    localStorage.setItem("user", JSON.stringify(userData));
 
-      // Redirect
-      navigate("/");
+    // ✅ Get current user with both cookie + header support
+    const meRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
+      method: "GET",
+      headers: { 
+        "Content-Type": "application/json",
+        ...(token && { "Authorization": `Bearer ${token}` }), // ✅ send header if exists
+      },
+      credentials: "include", // ✅ send cookie too
+    });
 
+    const meData = await meRes.json();
+    if (!meRes.ok) throw new Error(meData.message || "Failed to fetch user");
 
-    } catch (err) {
-      setError(err.message);
-      dispatch(loginFailure(err.message));
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    // Save user in Redux
+    dispatch(loginSuccess(meData.user || meData));
+
+    // ✅ Persist user
+    localStorage.setItem("user", JSON.stringify(meData.user || meData));
+
+    navigate("/"); // redirect home
+  } catch (err) {
+    setError(err.message);
+    dispatch(loginFailure(err.message));
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <div className="w-full px-4 sm:px-6 md:px-8 lg:px-0 flex justify-center items-center min-h-screen">

@@ -206,7 +206,7 @@ exports.addReview = asyncHandler(async (req, res) => {
   const productId = req.params.id;
 
   if (!req.user?.email) {
-    return res.status(401).json({ success: false, message: "Not authorized" });
+    return res.status(401).json({ success: false, message: "Please log in to add a review" });
   }
 
   if (!mongoose.Types.ObjectId.isValid(productId)) {

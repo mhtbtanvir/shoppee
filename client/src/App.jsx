@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import axios from "axios";
+import ScrollToTop from "./components/ScrollToTop";
 
 import PrivateRoute from "./components/PrivateRoute";
 import AuthLayout from "./components/auth/authLayout";
@@ -16,7 +17,7 @@ import RecreatePassword from "./pages/auth/recreatePassword";
 import HomePage from "./pages/homepage/homePage";
 import Product from "./pages/navLink/product";
 import WishList from "./pages/HeaderLinks/wishList";
-import ProductDetails from "./pages/navLink/productsDetails";
+import ProductDetails from "./pages/productsDetails";
 import About from "./pages/navLink/About";
 import Contact from "./pages/navLink/Contact";
 import Checkout from "./pages/HeaderLinks/Order/checkout";
@@ -26,27 +27,61 @@ import OrderHistory from "./pages/HeaderLinks/Order/orderHistory";
 import AdminDashboard from "./pages/admin/dashboard";
 import AdminProducts from "./pages/admin/products";
 import { useDispatch, useSelector } from "react-redux";
-import { selectAuth ,loginSuccess} from "./store/auth-slice";
+import { loginSuccess} from "./store/auth-slice";
 
 function App() {
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
+  
 
-  useEffect(() => {
-    // 1️⃣ Check if user exists in Redux
-    if (user) {
-      dispatch(loginSuccess(user));
-    } else {
-      // 2️⃣ If not in Redux, check localStorage
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        dispatch(loginSuccess(JSON.parse(storedUser)));
+ 
+useEffect(() => {
+  const initAuth = async () => {
+    const storedToken = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+
+    if (storedToken) {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${storedToken}`,
+          },
+          credentials: "include", // send cookies too
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.user) {
+          dispatch(loginSuccess(data.user));
+          localStorage.setItem("user", JSON.stringify(data.user));
+        } else {
+          console.warn("Token invalid or expired");
+          localStorage.removeItem("token");
+          if (storedUser) {
+            dispatch(loginSuccess(JSON.parse(storedUser))); // fallback
+          } else {
+            localStorage.removeItem("user");
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch current user:", err);
+        if (storedUser) dispatch(loginSuccess(JSON.parse(storedUser)));
       }
+    } else if (storedUser) {
+      dispatch(loginSuccess(JSON.parse(storedUser))); // fallback if no token
     }
-  }, [dispatch, user]);
+  };
+
+  initAuth();
+}, [dispatch]);
+
 
   return (
+    <>
+    <ScrollToTop />
     <Routes>
+     
       {/* Auth routes */}
       <Route path="/auth" element={<AuthLayout />}>
         <Route path="login" element={<Login />} />
@@ -84,6 +119,7 @@ function App() {
         <Route path="products" element={<AdminProducts />} />
       </Route>
     </Routes>
+    </>
   );
 }
 
