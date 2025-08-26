@@ -1,6 +1,5 @@
 // utils/sendTokenResponse.js
 const jwt = require("jsonwebtoken"); 
-
 function sendTokenResponse(user, statusCode, res) {
   const signToken = (id, role) => {
   return jwt.sign(
@@ -10,7 +9,6 @@ function sendTokenResponse(user, statusCode, res) {
   );
 };
   const token = signToken(user._id, user.role);
-
   // 1️⃣ Set cookie
   res.cookie("token", token, {
     httpOnly: true,
