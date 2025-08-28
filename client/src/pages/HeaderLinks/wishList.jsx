@@ -16,7 +16,7 @@ const Wishlist = () => {
       setLoading(true);
       try {
         const { data } = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/products/wishlist`,
+          `/api/products/wishlist`,
           { withCredentials: true }
         );
 
@@ -77,7 +77,7 @@ const Wishlist = () => {
 
     try {
       const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/products/${productId}/like`,
+        `/api/products/${productId}/like`,
         
         {},
         { withCredentials: true }

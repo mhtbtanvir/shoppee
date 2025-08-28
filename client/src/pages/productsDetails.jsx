@@ -34,7 +34,7 @@ const ProductDetails = () => {
     const fetchProduct = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/products/${id}`, {
+        const res = await axios.get(`/api/products/${id}`, {
           withCredentials: true,
         });
 

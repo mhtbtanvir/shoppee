@@ -52,7 +52,7 @@ const Register = () => {
     setIsLoading(true);
 
 try {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register/send-otp`, {
+  const res = await fetch(`/api/auth/register/send-otp`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include", // sends cookies if backend sets them

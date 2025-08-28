@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ProductCard from "@/components/product/ProductCard";
 
-const API_URL = `${import.meta.env.VITE_API_URL}/api/products`;
+const API_URL = `/api/products`;
 
 const SimilarProducts = () => {
   const [products, setProducts] = useState([]);

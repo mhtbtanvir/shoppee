@@ -22,7 +22,7 @@ const Login = () => {
   setError(null);
 
   try {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+    const res = await fetch(`/api/auth/login`, {
       method: "POST",
       headers: { 
         "Content-Type": "application/json",
@@ -52,7 +52,7 @@ const Login = () => {
 
 
     // ✅ Get current user with both cookie + header support
-    const meRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
+    const meRes = await fetch(`/api/auth/me`, {
       method: "GET",
       headers: { 
         "Content-Type": "application/json",

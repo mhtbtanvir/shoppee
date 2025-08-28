@@ -57,8 +57,8 @@ const OTP = () => {
     try {
       const apiUrl =
         otpMode === "register"
-          ? `${import.meta.env.VITE_API_URL}/api/auth/register/verify-otp`
-          : `${import.meta.env.VITE_API_URL}/api/auth/forgot-password/verify-otp`;
+          ? `/api/auth/register/verify-otp`
+          : `/api/auth/forgot-password/verify-otp`;
 
       const res = await fetch(apiUrl, {
         method: "POST",
