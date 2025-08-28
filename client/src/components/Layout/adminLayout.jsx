@@ -16,7 +16,7 @@ const AdminLayout = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/products`, {
+      const res = await fetch(`/api/admin/products`, {
         credentials: "include",
       });
 
