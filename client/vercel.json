@@ -2,7 +2,15 @@
   "rewrites": [
     {
       "source": "/api/:path*",
+
       "destination": "https://shoppee-sb9u.onrender.com/api/:path*" 
+    },
+
+    { 
+
+      "source": "/(.*)", 
+      
+      "destination": "/index.html" 
     }
   ]
 }
