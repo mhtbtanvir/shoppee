@@ -41,7 +41,7 @@ useEffect(() => {
 
     if (storedToken) {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
+        const res = await fetch(`/api/auth/me`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
