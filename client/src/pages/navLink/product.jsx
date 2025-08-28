@@ -91,7 +91,7 @@ const Product = () => {
 
     try {
       const res = await axios.post(
-        `${API_URL}/${productId}/like`,
+        `/api/products/${productId}/like`,
         {},
         { withCredentials: true }
       );

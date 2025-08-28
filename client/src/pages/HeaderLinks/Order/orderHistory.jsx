@@ -22,7 +22,7 @@ const OrderHistory = () => {
 
   const fetchOrders = async () => {
   try {
-    const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/orders`, {
+    const { data } = await axios.get(`/api/orders`, {
       withCredentials: true, // ✅ send cookie (jwt) to backend
     });
 
