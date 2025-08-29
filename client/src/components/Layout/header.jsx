@@ -190,7 +190,7 @@ const iconLinks = [
       </div>
 
       {/* Search (mobile) */}
-      <SearchForm className="mx-5 my-10 flex justify-center ml-16 " />
+      <SearchForm className="mx-5 w-3/5 my-10 flex justify-center ml-16 " />
 
       {/* Links */}
       <ul className="text-center font-medium">

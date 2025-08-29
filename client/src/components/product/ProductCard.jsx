@@ -194,7 +194,7 @@ const [selectedSize, setSelectedSize] = useState(product.size?.[0] || "");
 //   );
 
 return (
-  <div className="group relative bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col overflow-hidden">
+  <div className="group relative h-full  bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col overflow-hidden">
     {/* Discount Badge */}
     {product.discount > 0 && (
       <div className="absolute top-3 left-3 bg-gradient-to-r from-red-500 to-red-400 text-white px-2 py-1 text-xs font-semibold rounded-full shadow-md z-10">

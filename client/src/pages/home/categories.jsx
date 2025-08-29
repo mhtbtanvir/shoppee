@@ -2,12 +2,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { AiOutlineArrowRight } from "react-icons/ai";
-import { Link } from "react-router-dom"; // ✅ Import Link
+import { Link } from "react-router-dom";
 
 const Categories = () => {
   const [categories, setCategories] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // ✅ For pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(4);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -18,7 +22,6 @@ const Categories = () => {
 
         const products = res.data.products || [];
 
-        // Group products by category
         const grouped = products.reduce((acc, product) => {
           const cat = product.category || "Uncategorized";
           if (!acc[cat]) {
@@ -44,6 +47,21 @@ const Categories = () => {
     fetchProducts();
   }, []);
 
+  // ✅ Update items per page depending on screen size
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      if (window.innerWidth < 768) {
+        setItemsPerPage(2); // sm screen
+      } else {
+        setItemsPerPage(4); // md+ screen
+      }
+    };
+
+    updateItemsPerPage();
+    window.addEventListener("resize", updateItemsPerPage);
+    return () => window.removeEventListener("resize", updateItemsPerPage);
+  }, []);
+
   if (loading)
     return (
       <p className="text-center mt-10 text-gray-700 font-semibold">Loading...</p>
@@ -52,23 +70,30 @@ const Categories = () => {
   if (error)
     return <p className="text-center mt-10 text-red-600 font-bold">{error}</p>;
 
-  return (
-    
-    <div className="container  mx-auto  px-4 py-5 ">
-        <h2 className="-mt-4 text-4xl md:text-5xl font-extrabold text-gray-900 font-prata tracking-tight text-center">
-    Browse Categories
-  </h2>
-  <p className="my-8 pb-10 text-gray-600 text-lg max-w-xl mx-auto text-center">
-    Discover our diverse collection of products, carefully curated to suit every taste and need.
-  </p>
-  
+  const allCategories = Object.values(categories);
+  const totalPages = Math.ceil(allCategories.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedCategories = allCategories.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
-      <div className="grid  gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {Object.keys(categories).length > 0 ? (
-          Object.values(categories).map((cat) => (
+  return (
+    <div className="container mx-auto px-4 py-5">
+      <h2 className="mt-4 text-4xl md:text-5xl font-extrabold text-gray-900 font-prata tracking-tight text-center">
+        Browse Categories
+      </h2>
+      <p className="my-8  text-gray-600 text-lg max-w-xl mx-auto text-center">
+        Discover our diverse collection of products, carefully curated to suit every taste and need.
+      </p>
+
+      {/* Categories Grid */}
+      <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {paginatedCategories.length > 0 ? (
+          paginatedCategories.map((cat) => (
             <div
               key={cat.name}
-              className="relative border  border-gray-800  shadow hover:shadow-lg transition-shadow duration-300 flex flex-col"
+              className="relative border border-gray-800 shadow hover:shadow-lg transition-shadow duration-300 flex flex-col"
             >
               {/* Image */}
               <div className="relative w-full h-56 overflow-hidden">
@@ -106,7 +131,6 @@ const Categories = () => {
                 </p>
 
                 <div className="mt-auto flex justify-end">
-                  {/* ✅ Link to filtered products page */}
                   <Link
                     to={`/products?category=${encodeURIComponent(cat.name)}`}
                     className="inline-flex items-center gap-1 px-3 py-2 bg-black text-white rounded-lg font-semibold shadow hover:bg-gray-800 transition"
@@ -123,6 +147,45 @@ const Categories = () => {
           </p>
         )}
       </div>
+
+      {/* ✅ Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-6 md:mt-10">
+          {/* Prev Button (hidden on small screens) */}
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="hidden md:block px-4 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
+          >
+            Prev
+          </button>
+
+          {/* Dots for mobile */}
+          <div className="flex gap-2">
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`w-2 h-2 rounded-full ${
+                  currentPage === i + 1 ? "bg-cyan-600" : "bg-gray-300"
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Next Button (hidden on small screens) */}
+          <button
+          
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              
+            }
+            disabled={currentPage === totalPages}
+            className="hidden md:block px-4 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };

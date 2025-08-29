@@ -18,7 +18,7 @@ const HomePage = () => {
       {/* Featured Products */}
       <section
         id="shop"
-        className="mx-6 mt-20 p-8 border border-t-8 border-gray-300 shadow-md rounded-2xl bg-gradient-to-l from-gray-100/50 to-gray-200/30 backdrop-blur-sm"
+        className="md:mx-6 mt-20 p-2 border border-t-8 border-gray-300 shadow-md rounded-2xl bg-gradient-to-l from-gray-100/50 to-gray-200/30 backdrop-blur-sm"
       >
         <FeaturedProducts />
       </section>
@@ -26,7 +26,7 @@ const HomePage = () => {
       {/* Categories */}
       <section
         id="categories"
-        className="mx-6 mt-20 border border-t-8 p-8  border-gray-300 shadow-md rounded-2xl bg-gray-400/30 backdrop-blur-lg"
+        className="md:mx-6 mt-20 border border-t-8 p-2  border-gray-300 shadow-md rounded-2xl bg-gray-400/30 backdrop-blur-lg"
       >
         <Categories />
       </section>
@@ -34,7 +34,7 @@ const HomePage = () => {
       {/* Deals */}
       <section
         id="deals"
-        className="mx-6 mt-20 p-8 border border-t-4 border-gray-300 
+        className="md:mx-6 mt-20 p-8 border border-t-4 border-gray-300 
         shadow-md rounded-2xl bg-gradient-to-l from-gray-100/50 to-gray-200/30 backdrop-blur-sm"
       >
         <Deals />
@@ -52,7 +52,7 @@ const HomePage = () => {
       {/* Testimonials */}
       <section
         id="contact"
-        className="mx-6 mt-20 p-8 border border-t-2 border-gray-300 shadow-lg rounded-xl bg-gradient-to-l from-gray-100/50 to-gray-200/30 backdrop-blur-sm backdrop-blur-md"
+        className="md:mx-6 mt-20 p-8 border border-t-2 border-gray-300 shadow-lg rounded-xl bg-gradient-to-l from-gray-100/50 to-gray-200/30 backdrop-blur-sm backdrop-blur-md"
       >
         <Testimonials />
       </section>
@@ -60,7 +60,7 @@ const HomePage = () => {
       {/* Newsletter */}
       <section
         id="newsletter"
-        className="mx-6 mt-20 p-8 border-t-2 rounded-b-sm border-gray-300 shadow-md rounded-2xl bg-gradient-to-l from-gray-100/50 to-gray-200/30 backdrop-blur-sm"
+        className="md:mx-6 mt-20 p-8 border-t-2 rounded-b-sm border-gray-300 shadow-md rounded-2xl bg-gradient-to-l from-gray-100/50 to-gray-200/30 backdrop-blur-sm"
       >
         <Newsletter />
       </section>

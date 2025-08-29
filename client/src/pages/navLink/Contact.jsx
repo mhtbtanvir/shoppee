@@ -20,7 +20,6 @@ const Contact = () => {
   };
 
   return (
-            <div className="m-6 border-2 border-gray-500/30 shadow-xl p-6">
 
     <div className="min-h-screen bg-gradient-to-br from-gray-200 via-black- to-gray-50 flex items-center justify-center p-6">
      
@@ -78,7 +77,7 @@ const Contact = () => {
             Stay connected through our social media channels.
           </p>
 
-          <div className="flex gap-6">
+          <div className="flex  gap-2">
             <a
               href="https://facebook.com"
               target="_blank"
@@ -120,7 +119,7 @@ const Contact = () => {
       </div>
     </div>
 
-    </div>
+    
   );
 };
 
