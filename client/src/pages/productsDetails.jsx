@@ -92,156 +92,174 @@ const ProductDetails = () => {
   const firstImage = images[selectedImage] || null;
 
 
-  return(
-    <div className="max-w-7xl mx-auto mt-8 px-4 sm:px-6 lg:px-8">
-       <button
-              onClick={() => navigate(-1)}
-              className="flex items-center gap-2 text-gray-700 hover:text-gray-900 mb-6"
-            >
-              <IoArrowBackOutline className="w-6 h-6" />
-              <span className="font-medium">Back </span>
-            </button>
-  <div className="flex flex-col lg:flex-row gap-12 bg-white rounded-3xl shadow-xl p-8">
-    
-    {/* Left: Product Images */}
-    <div className="flex-1  flex flex-col gap-4">
-      <div className="w-full  h-96 rounded-2xl overflow-hidden bg-gray-50 shadow-inner flex items-center justify-center">
-        {firstImage ? (
-          <img
-            src={firstImage}
-            alt={product.name}
-            className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
-          />
-        ) : (
-          <span className="text-gray-400 text-lg">No Image</span>
-        )}
-      </div>
+ return (
+  <div className=" max-w-7xl mx-auto mt-8 px-0 md:px-6 lg:px-8">
+    {/* Back Button */}
+    <button
+      onClick={() => navigate(-1)}
+      className="flex ml-2 items-center gap-2 text-gray-700 hover:text-gray-900 mb-6"
+    >
+      <IoArrowBackOutline className="w-6 h-6" />
+    </button>
 
-      {images.length > 1 && (
-        <div className="flex gap-3 pl-2 overflow-x-auto py-2">
-          {images.map((img, idx) => (
+    {/* Main Product Area */}
+    <div className="flex border border-gray-400 flex-col lg:flex-row gap-12 bg-white rounded-3xl shadow-xl p-8">
+      {/* Left: Product Images */}
+      <div className="flex-1 flex flex-col gap-4">
+        <div className="w-full h-96 rounded-2xl overflow-hidden bg-gray-50 shadow-inner flex items-center justify-center">
+          {firstImage ? (
             <img
-              key={idx}
-              src={img}
+              src={firstImage}
               alt={product.name}
-              onClick={() => setSelectedImage(idx)}
-              className={`w-24 h-24 object-cover rounded-xl cursor-pointer border-2 transition-all ${
-                selectedImage === idx ? "border-blue-500 scale-105" : "border-gray-300"
-              }`}
+              className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
             />
-          ))}
+          ) : (
+            <span className="text-gray-400 text-lg">No Image</span>
+          )}
         </div>
-      )}
-    </div>
 
-    {/* Right: Product Details */}
-    <div className="flex-1 flex flex-col gap-6 p-4 lg:p-6">
-      {/* Stock Status */}
-      <span
-        className={`font-semibold ${
-          product.stock > 0 ? "text-green-600" : "text-red-500"
-        }`}
-      >
-        {product.stock > 0 ? "In Stock" : "Out of Stock"}
-      </span>
-
-      {/* Name & Brand */}
-      <h1 className="text-5xl font-bold text-gray-800">{product.name}</h1>
-      {product.brand && <p className="text-gray-500 text-sm">{product.brand}</p>}
-
-      {/* Price */}
-      <div className="flex items-baseline gap-4">
-        {product.discountPrice < product.price ? (
-          <>
-            <span className="text-4xl font-bold text-green-600">${product.discountPrice.toFixed(2)}</span>
-            <span className="line-through text-xl text-red-500">${product.price.toFixed(2)}</span>
-          </>
-        ) : (
-          <span className="text-3xl font-semibold text-gray-800">${product.price.toFixed(2)}</span>
+        {images.length > 1 && (
+          <div className="flex gap-3 overflow-x-auto py-2">
+            {images.map((img, idx) => (
+              <img
+                key={idx}
+                src={img}
+                alt={product.name}
+                onClick={() => setSelectedImage(idx)}
+                className={`w-24 h-24 object-cover rounded-xl cursor-pointer border-2 transition-all ${
+                  selectedImage === idx
+                    ? "border-blue-500 scale-105"
+                    : "border-gray-300"
+                }`}
+              />
+            ))}
+          </div>
         )}
       </div>
 
-      {/* Ratings */}
-      {product.ratings && (
-        <div className="flex items-center gap-2">
-          {Array.from({ length: 5 }, (_, i) => (
-            <AiFillStar
-              key={i}
-              className={`w-5 h-5 ${
-                i < Math.round(product.ratings.average || 0) ? "text-yellow-400" : "text-gray-300"
-              }`}
-            />
-          ))}
-          <span className="text-gray-600 text-sm ml-2">
-            {product.ratings.average?.toFixed(1) || "0.0"} ({product.ratings.count || 0})
-          </span>
-        </div>
-      )}
+      {/* Right: Product Details */}
+      <div className="flex-1 flex flex-col  lg:p-8">
+  {/* Stock Status */}
+  <span
+    className={`font-semibold text-sm uppercase tracking-wide ${
+      product.stock > 0 ? "text-green-600" : "text-red-500"
+    }`}
+  >
+    {product.stock > 0 ? "In Stock" : "Out of Stock"}
+  </span>
 
-      {/* Description */}
-      <p className="text-gray-700 leading-relaxed">{product.description}</p>
+  {/* Name & Brand */}
+  <h1 className="text-3xl lg:text-4xl font-extrabold text-gray-900 leading-tight">
+    {product.name}
+  </h1>
+  {product.brand && (
+    <p className="text-gray-500 text-sm lg:text-base mt-1">{product.brand}</p>
+  )}
 
-      {/* Colors */}
-      {product.color?.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-3">
-          {product.color.map((c, idx) => (
-            <button
-              key={idx}
-              onClick={() => setSelectedColor(c)}
-              className={`w-6 h-6 rounded-full border-2 transition ${
-                selectedColor === c ? "border-blue-500 scale-115" : "border-white"
-              }`}
-              style={{ backgroundColor: c }}
-              title={c}
-            />
-          ))}
-        </div>
-      )}
-      {/* Sizes & Likes */}
-      <div className="flex justify-between items-center">
-          {product.size?.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-3">
-          {product.size.map((s, idx) => (
-            <button
-              key={idx}
-              onClick={() => setSelectedSize(s)}
-              className={`px-2 py-0.5 text-xs rounded-md border transition ${
-                selectedSize === s
-                  ? "bg-blue-500 text-white border-white"
-                  : "bg-gray-100 text-gray-700 border-gray-300"
-              }`}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
-      )}
-        <div className="flex items-center gap-1 text-red-500 text-lg font-semibold">
-          <AiFillHeart />
-          <span>{product.like || 0}</span>
-        </div>
-      </div>
+  {/* Price */}
+  <div className="flex items-baseline gap-3 mt-2">
+    {product.discountPrice < product.price ? (
+      <>
+        <span className="text-3xl lg:text-4xl font-bold text-green-600">
+          ${product.discountPrice.toFixed(2)}
+        </span>
+        <span className="line-through text-lg lg:text-xl text-red-400">
+          ${product.price.toFixed(2)}
+        </span>
+      </>
+    ) : (
+      <span className="text-3xl lg:text-4xl font-semibold text-gray-900">
+        ${product.price.toFixed(2)}
+      </span>
+    )}
+  </div>
 
-      {/* Add to Cart */}
-      
-
-        <AddToCartButton
-          product={product}
-          selectedColor={selectedColor}
-          selectedSize={selectedSize}
+  {/* Ratings */}
+  {product.ratings && (
+    <div className="flex items-center gap-2 mt-1">
+      {Array.from({ length: 5 }, (_, i) => (
+        <AiFillStar
+          key={i}
+          className={`w-5 h-5 ${
+            i < Math.round(product.ratings.average || 0)
+              ? "text-yellow-400"
+              : "text-gray-300"
+          }`}
         />
+      ))}
+      <span className="text-gray-600 text-sm ml-2">
+        {product.ratings.average?.toFixed(1) || "0.0"} ({product.ratings.count || 0})
+      </span>
+    </div>
+  )}
 
+  {/* Description */}
+  <p className="text-gray-700 text-sm lg:text-base leading-relaxed mt-4">
+    {product.description}
+  </p>
 
+  {/* Colors */}
+  {product.color?.length > 0 && (
+    <div className="flex flex-wrap gap-2 mt-4">
+      {product.color.map((c, idx) => (
+        <button
+          key={idx}
+          onClick={() => setSelectedColor(c)}
+          className={`w-6 h-6 rounded-full border-2 transition-transform transform ${
+            selectedColor === c ? "border-blue-500 scale-110" : "border-gray-300"
+          }`}
+          style={{ backgroundColor: c }}
+          title={c}
+        />
+      ))}
+    </div>
+  )}
+
+  {/* Sizes & Likes */}
+  <div className="flex justify-between items-center mt-4">
+    {product.size?.length > 0 && (
+      <div className="flex flex-wrap gap-2">
+        {product.size.map((s, idx) => (
+          <button
+            key={idx}
+            onClick={() => setSelectedSize(s)}
+            className={`px-3 py-1 text-xs lg:text-sm rounded-md border transition ${
+              selectedSize === s
+                ? "bg-blue-500 text-white border-blue-500"
+                : "bg-gray-100 text-gray-700 border-gray-300"
+            }`}
+          >
+            {s}
+          </button>
+        ))}
+      </div>
+    )}
+    <div className="flex items-center gap-1 text-red-500 text-lg font-semibold">
+      <AiFillHeart />
+      <span>{product.like || 0}</span>
     </div>
   </div>
 
-  {/* Reviews Section */}
-  <ProductReviews product={product} setProduct={setProduct} />
-
-  {/* Similar Products */}
-  <SimilarProduct product={product} />
+  {/* Add to Cart */}
+  <div className="mt-6">
+    <AddToCartButton
+      product={product}
+      selectedColor={selectedColor}
+      selectedSize={selectedSize}
+    />
+  </div>
 </div>
-  )
+
+    </div>
+
+    {/* Reviews Section */}
+    <ProductReviews product={product} setProduct={setProduct} />
+
+    {/* Similar Products */}
+    <SimilarProduct product={product} />
+  </div>
+);
+
   };
   
 

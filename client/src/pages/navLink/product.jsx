@@ -129,7 +129,7 @@ const Product = () => {
   };
 
   return (
-    <div className="m-6 border-2 border-gray-500/70 shadow-lg p-6">
+    <div className="md:m-6   shadow-2xl p-6">
          <button
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 text-gray-700 hover:text-gray-900 mb-6"
