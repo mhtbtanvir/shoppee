@@ -3,7 +3,6 @@ import axios from "axios";
 import ProductCard from "@/components/product/ProductCard";
 import { useSelector, } from "react-redux";
 import { selectAuth,  } from "../../store/auth-slice";
-import ScrollToTop from "@/components/scrollToTop";
 import  { useRef } from "react";
 
 const FeaturedProducts = () => {
@@ -176,94 +175,84 @@ if (error) {
 }
 
  
- return (
-  
-    <section ref={topRef} className="py-2 px-0 md:px-4">
-      {/* Heading */}
-      <div  className="text-center mb-8 md:mb-16">
-        <h2 className="pt-4 md:pt-8 text-2xl md:text-5xl font-extrabold text-gray-900 font-prata tracking-tight">
-          Curated Just for You
-          {isAuthenticated && (
-            <span className="text-cyan-600">{" - " + user?.name}!</span>
-          )}
-        </h2>
-       
-      </div>
+return (
+  <section ref={topRef} className="py-4 px-2 md:px-6">
+    {/* Heading */}
+    <div className="text-center mb-6 md:mb-12">
+      <h2 className="text-2xl md:text-5xl font-extrabold text-gray-900 font-prata tracking-tight pt-2 md:pt-6">
+        Curated Just for You
+        {isAuthenticated && (
+          <span className="text-cyan-600">{" - " + user?.name}!</span>
+        )}
+      </h2>
+    </div>
 
-      {/* Products */}
-      {/* Mobile: horizontal scroll | Desktop: grid */}
-  <div
-  className="flex gap-2 overflow-x-auto pb-2 
-             md:grid md:grid-cols-3 md:gap-6
-              md:overflow-visible 
-             py-2 scroll-smooth"
->
-  {paginatedProducts.length > 0 ? (
-    paginatedProducts.map((product) => (
-      <div
-        key={product._id}
-        className="w-[70%] sm:w-[45%] md:w-full flex-shrink-0 
-                   flex flex-col justify-between
-                   bg-white rounded-lg shadow-sm 
-                   hover:shadow-2xl hover:scale-105 hover:z-10
-                   transition-transform duration-200 ease-in-out"
-      >
-        <ProductCard product={product} onLike={handleLike} />
-      </div>
-    ))
-  ) : (
-    <p className="col-span-full text-center text-gray-500">
-      No featured products available.
-    </p>
-  )}
-</div>
-
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-6 md:mt-10">
-          {/* Prev Button (hidden on small screens) */}
-          <button
-           onClick={() => {
-  setCurrentPage((prev) => Math.max(prev - 1, 1));
-  topRef.current?.scrollIntoView({ behavior: "smooth" });
-}}
-
-            disabled={currentPage === 1}
-            className="hidden md:block px-4 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
+    {/* Products: mobile scroll / desktop grid */}
+    <div
+      className="flex gap-3 scrollbar-hide overflow-x-auto pb-4 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible scroll-smooth"
+    >
+      {paginatedProducts.length > 0 ? (
+        paginatedProducts.map((product) => (
+          <div
+            key={product._id}
+            className="flex-shrink-0 w-4/5 sm:w-2/3 md:w-full flex flex-col justify-between
+                       bg-white rounded-lg shadow-sm hover:shadow-2xl hover:scale-105 hover:z-10
+                       transition-transform duration-200 ease-in-out"
           >
-            Prev
-          </button>
-
-          {/* Dots for mobile */}
-          <div className="flex gap-2">
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentPage(i + 1)}
-                className={`w-2 h-2 rounded-full ${
-                  currentPage === i + 1 ? "bg-cyan-600" : "bg-gray-300"
-                }`}
-              />
-            ))}
+            <ProductCard product={product} onLike={handleLike} />
           </div>
-
-          {/* Next Button (hidden on small screens) */}
-          <button
-          
-            onClick={() => {
-  setCurrentPage((prev) => Math.max(prev +1, 1));
-  topRef.current?.scrollIntoView({ behavior: "smooth" });
-}}
-            disabled={currentPage === totalPages}
-            className="hidden md:block px-4 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
-          >
-            Next
-          </button>
-        </div>
+        ))
+      ) : (
+        <p className="col-span-full text-center text-gray-500">
+          No featured products available.
+        </p>
       )}
-    </section>
-  );
+    </div>
+
+    {/* Pagination */}
+    {totalPages > 1 && (
+      <div className="flex justify-center items-center gap-2 mt-6 md:mt-10">
+        {/* Prev Button (desktop only) */}
+        <button
+          onClick={() => {
+            setCurrentPage((prev) => Math.max(prev - 1, 1));
+            topRef.current?.scrollIntoView({ behavior: "smooth" });
+          }}
+          disabled={currentPage === 1}
+          className="hidden md:block px-4 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
+        >
+          Prev
+        </button>
+
+        {/* Dots for mobile */}
+        <div className="flex gap-2">
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`w-2 h-2 rounded-full ${
+                currentPage === i + 1 ? "bg-cyan-600" : "bg-gray-300"
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Next Button (desktop only) */}
+        <button
+          onClick={() => {
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+            topRef.current?.scrollIntoView({ behavior: "smooth" });
+          }}
+          disabled={currentPage === totalPages}
+          className="hidden md:block px-4 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
+        >
+          Next
+        </button>
+      </div>
+    )}
+  </section>
+);
+
 }
 
 export default FeaturedProducts;

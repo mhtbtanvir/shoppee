@@ -168,7 +168,7 @@ const Deals = () => {
    <div
   className="flex gap-4  overflow-x-auto pb-3 
              md:grid md:grid-cols-2 lg:grid-cols-4 
-             md:gap-6 md:overflow-visible"
+             md:gap-6 md:overflow-visible scrollbar-hide"
 >
   {paginatedProducts.map((product) => (
     <div
@@ -177,7 +177,7 @@ const Deals = () => {
                    flex flex-col justify-between
                    bg-white rounded-lg shadow-sm 
                    hover:shadow-2xl hover:scale-105 hover:z-10
-                   transition-transform duration-200 ease-in-out"
+                   transition-transform scr duration-200 ease-in-out"
       >
       <ProductCard product={product} onLike={handleLike} />
     </div>
