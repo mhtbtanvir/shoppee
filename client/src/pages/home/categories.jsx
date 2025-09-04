@@ -3,8 +3,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { AiOutlineArrowRight } from "react-icons/ai";
 import { Link } from "react-router-dom";
-
+import { useRef } from "react";
 const Categories = () => {
+  const topRef = useRef(null);
   const [categories, setCategories] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -62,13 +63,53 @@ const Categories = () => {
     return () => window.removeEventListener("resize", updateItemsPerPage);
   }, []);
 
-  if (loading)
-    return (
-      <p className="text-center mt-10 text-gray-700 font-semibold">Loading...</p>
-    );
+if (loading) {
+  return (
+    <div className="featured-products p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10">
+      {Array.from({ length: 4}).map((_, i) => (
+        <div
+          key={i}
+          className="border border-gray-200 rounded-lg p-4 shadow-sm animate-pulse"
+        >
+          {/* Image Placeholder */}
+          <div className="bg-gray-600 h-60 rounded-md mb-4"></div>
 
-  if (error)
-    return <p className="text-center mt-10 text-red-600 font-bold">{error}</p>;
+          {/* Title Placeholder */}
+          <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+
+        
+          {/* Like/Action Placeholder */}
+          <div className="h-4 bg-gray-300 rounded w-1/4 mt-4"></div>
+        </div>
+      ))}
+   <p className="col-span-full text-center text-gray-500 mt-4 text-sm">
+  Loading featured products… please wait a few seconds.{" "}
+  <span className="text-gray-400 italic">
+    (First-time load may take up to 30 seconds as the server starts)
+  </span>
+</p>
+
+    </div>
+  );
+}
+
+
+if (error) {
+  return (
+    <div className="flex flex-col items-center justify-center mt-20 text-red-600">
+      <p className="text-lg font-bold">⚠️ Oops! Something went wrong.</p>
+      <p className="text-sm text-gray-500 mt-1">
+        Failed to load Catagories. Please try refreshing the page.
+      </p>
+      <button
+        onClick={() => window.location.reload()}
+        className="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+      >
+        Retry
+      </button>
+    </div>
+  );
+}
 
   const allCategories = Object.values(categories);
   const totalPages = Math.ceil(allCategories.length / itemsPerPage);
@@ -153,7 +194,10 @@ const Categories = () => {
         <div className="flex justify-center items-center gap-2 mt-6 md:mt-10">
           {/* Prev Button (hidden on small screens) */}
           <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+             onClick={() => {
+            setCurrentPage((prev) => Math.max(prev -1, 1));
+            topRef.current?.scrollIntoView({ behavior: "smooth" });
+          }}
             disabled={currentPage === 1}
             className="hidden md:block px-4 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
           >
@@ -176,9 +220,10 @@ const Categories = () => {
           {/* Next Button (hidden on small screens) */}
           <button
           
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              
-            }
+                    onClick={() => {
+  setCurrentPage((prev) => Math.max(prev +1, 1));
+  topRef.current?.scrollIntoView({ behavior: "smooth" });
+}}
             disabled={currentPage === totalPages}
             className="hidden md:block px-4 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
           >

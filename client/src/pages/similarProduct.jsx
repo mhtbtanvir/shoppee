@@ -93,7 +93,7 @@ const SimilarProducts = () => {
 
   return (
 <div className="mt-10 px-10">
-  <h2 className="text-2xl font-bold text-gray-800 mb-6">Similar Products</h2>
+  <h2 className="text-4xl justify-center flex font-prata font-bold text-gray-800 mb-6">Similar Products</h2>
 
   <div className="flex gap-6 overflow-x-auto py-4 scroll-smooth custom-scrollbar">
     {products.map((product) => (

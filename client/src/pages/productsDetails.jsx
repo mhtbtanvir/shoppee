@@ -67,26 +67,75 @@ const ProductDetails = () => {
     fetchProduct();
   }, [id]);
 
-  // const handleLike = async () => {
-  //   try {
-  //     // Optional: Call API to toggle like
-  //     await axios.post(
-  //       `${import.meta.env.VITE_API_URL}/api/products/${id}/like`,
-  //       {},
-  //       { withCredentials: true }
-  //     );
 
-  //     // Update UI optimistically
-  //     setLiked(!liked);
-  //     setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
-  //   } catch (err) {
-  //     console.error("Failed to update like", err);
-  //   }
-  // };
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
-  if (error) return <p className="text-center mt-10 text-red-600">{error}</p>;
-  if (!product) return <p className="text-center mt-10">Product not found</p>;
+ if (loading) {
+  return (
+    <div className="max-w-7xl mx-auto mt-8 px-4 md:px-6 lg:px-8 animate-pulse">
+      {/* Back button placeholder */}
+      <div className="w-20 h-6 bg-gray-300 rounded mb-6"></div>
+
+      {/* Main Product Area */}
+      <div className="flex flex-col lg:flex-row gap-12 bg-white rounded-3xl shadow-xl p-8">
+        {/* Left: Image Placeholder */}
+        <div className="flex-1 flex flex-col gap-4">
+          <div className="w-full h-96 bg-gray-300 rounded-2xl mb-2"></div>
+          <div className="flex gap-3 overflow-x-auto">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="w-24 h-24 bg-gray-300 rounded-xl"></div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right: Product Info Placeholder */}
+        <div className="flex-1 flex flex-col gap-4">
+          <div className="w-32 h-4 bg-gray-300 rounded"></div> {/* Stock */}
+          <div className="w-3/4 h-8 bg-gray-300 rounded"></div> {/* Name */}
+          <div className="w-1/2 h-4 bg-gray-300 rounded"></div> {/* Brand */}
+          <div className="flex gap-3 mt-2">
+            <div className="w-24 h-6 bg-gray-300 rounded"></div> {/* Price */}
+            <div className="w-16 h-6 bg-gray-300 rounded"></div> {/* Discount */}
+          </div>
+          <div className="w-full h-4 bg-gray-300 rounded mt-2"></div> {/* Ratings */}
+          <div className="w-full h-20 bg-gray-300 rounded mt-2"></div> {/* Description */}
+          <div className="flex gap-2 mt-2">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="w-6 h-6 bg-gray-300 rounded-full"></div>
+            ))}
+          </div>
+          <div className="flex gap-2 mt-2">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="w-10 h-6 bg-gray-300 rounded"></div> 
+            ))}
+          </div>
+          <div className="w-32 h-10 bg-gray-300 rounded mt-4"></div> {/* Add to Cart */}
+        </div>
+      </div>
+
+      {/* Footer note */}
+      <p className="mt-6 text-center text-gray-500 text-sm">
+        Loading product details… please wait a few seconds.{" "}
+        <span className="text-gray-400 italic">
+          (First-time load may take up to 30 seconds while the server starts)
+        </span>
+      </p>
+    </div>
+  );
+}
+
+if (error)
+  return (
+    <p className="text-center mt-10 text-red-600 text-lg font-semibold">
+      ⚠️ {error}. Please try refreshing the page.
+    </p>
+  );
+
+if (!product)
+  return (
+    <p className="text-center mt-10 text-gray-700 text-lg font-semibold">
+      Product not found. Please check the URL or browse other products.
+    </p>
+  );
 
   const images = product.images || [];
   const firstImage = images[selectedImage] || null;
@@ -106,7 +155,7 @@ const ProductDetails = () => {
     <div className="flex border border-gray-400 flex-col lg:flex-row gap-12 bg-white rounded-3xl shadow-xl p-8">
       {/* Left: Product Images */}
       <div className="flex-1 flex flex-col gap-4">
-        <div className="w-full h-96 rounded-2xl overflow-hidden bg-gray-50 shadow-inner flex items-center justify-center">
+        <div className="w-full h-96 rounded-2xl overflow-hidden bg-gray-50 border border-gray-800 shadow-inner flex items-center justify-center">
           {firstImage ? (
             <img
               src={firstImage}
@@ -138,7 +187,7 @@ const ProductDetails = () => {
       </div>
 
       {/* Right: Product Details */}
-      <div className="flex-1 flex flex-col  lg:p-8">
+      <div className="flex-1 md:-mt-6 flex flex-col  lg:p-8">
   {/* Stock Status */}
   <span
     className={`font-semibold text-sm uppercase tracking-wide ${

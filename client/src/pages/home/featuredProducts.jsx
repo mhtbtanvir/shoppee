@@ -4,12 +4,21 @@ import ProductCard from "@/components/product/ProductCard";
 import { useSelector, } from "react-redux";
 import { selectAuth,  } from "../../store/auth-slice";
 import ScrollToTop from "@/components/scrollToTop";
+import  { useRef } from "react";
+
 const FeaturedProducts = () => {
+
+   const topRef = useRef(null); // 👈 create a ref
+
+
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { isAuthenticated, user } = useSelector(selectAuth); // 👈 from Redux
   
+
+
+
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
@@ -116,19 +125,62 @@ const FeaturedProducts = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedProducts = featuredProducts.slice(startIndex, startIndex + itemsPerPage);
 
+if (loading) {
+  return (
+    <div className="featured-products p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <div
+          key={i}
+          className="border border-gray-200 rounded-lg p-4 shadow-sm animate-pulse"
+        >
+          {/* Image Placeholder */}
+          <div className="bg-gray-300 h-40 rounded-md mb-4"></div>
 
-  if (loading)
-    return <div className="text-center mt-10 text-gray-700 font-semibold">Loading...</div>;
+          {/* Title Placeholder */}
+          <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
 
-  if (error)
-    return <div className="text-center mt-10 text-red-600 font-bold">{error}</div>;
+          {/* Price Placeholder */}
+          <div className="h-4 bg-gray-300 rounded w-1/2 mb-2"></div>
+
+          {/* Like/Action Placeholder */}
+          <div className="h-4 bg-gray-300 rounded w-1/4 mt-4"></div>
+        </div>
+      ))}
+   <p className="col-span-full text-center text-gray-500 mt-4 text-sm">
+  Loading featured products… please wait a few seconds.{" "}
+  <span className="text-gray-400 italic">
+    (First-time load may take up to 30 seconds as the server starts)
+  </span>
+</p>
+
+    </div>
+  );
+}
+
+
+if (error) {
+  return (
+    <div className="flex flex-col items-center justify-center mt-20 text-red-600">
+      <p className="text-lg font-bold">⚠️ Oops! Something went wrong.</p>
+      <p className="text-sm text-gray-500 mt-1">
+        Failed to load featured products. Please try refreshing the page.
+      </p>
+      <button
+        onClick={() => window.location.reload()}
+        className="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+      >
+        Retry
+      </button>
+    </div>
+  );
+}
 
  
  return (
   
-    <section className="py-2 px-0 md:px-4">
+    <section ref={topRef} className="py-2 px-0 md:px-4">
       {/* Heading */}
-      <div className="text-center mb-8 md:mb-16">
+      <div  className="text-center mb-8 md:mb-16">
         <h2 className="pt-4 md:pt-8 text-2xl md:text-5xl font-extrabold text-gray-900 font-prata tracking-tight">
           Curated Just for You
           {isAuthenticated && (
@@ -172,7 +224,11 @@ const FeaturedProducts = () => {
         <div className="flex justify-center items-center gap-2 mt-6 md:mt-10">
           {/* Prev Button (hidden on small screens) */}
           <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+           onClick={() => {
+  setCurrentPage((prev) => Math.max(prev - 1, 1));
+  topRef.current?.scrollIntoView({ behavior: "smooth" });
+}}
+
             disabled={currentPage === 1}
             className="hidden md:block px-4 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
           >
@@ -195,9 +251,10 @@ const FeaturedProducts = () => {
           {/* Next Button (hidden on small screens) */}
           <button
           
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              
-            }
+            onClick={() => {
+  setCurrentPage((prev) => Math.max(prev +1, 1));
+  topRef.current?.scrollIntoView({ behavior: "smooth" });
+}}
             disabled={currentPage === totalPages}
             className="hidden md:block px-4 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-40"
           >
