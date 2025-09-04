@@ -159,11 +159,36 @@ const Product = () => {
       />
 
       {/* Products Grid */}
-      {loading ? (
-        <p className="text-center text-gray-700 font-semibold">Loading...</p>
-      ) : error ? (
-        <p className="text-center text-red-600 font-bold">{error}</p>
-      ) : filteredProducts.length > 0 ? (
+     {loading ? (
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-pulse max-w-7xl mx-auto mt-10 px-4 md:px-6 lg:px-8">
+    {Array.from({ length: 8 }).map((_, i) => (
+      <div key={i} className="border border-gray-200 rounded-lg p-4 shadow-sm">
+        {/* Image placeholder */}
+        <div className="bg-gray-300 h-40 rounded-md mb-4"></div>
+
+        {/* Title placeholder */}
+        <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+
+        {/* Price placeholder */}
+        <div className="h-4 bg-gray-300 rounded w-1/2 mb-2"></div>
+
+        {/* Like/Action placeholder */}
+        <div className="h-4 bg-gray-300 rounded w-1/4 mt-4"></div>
+      </div>
+    ))}
+
+    <p className="col-span-full text-center text-gray-500 mt-4 text-sm">
+      Loading featured products… please wait a few seconds.{" "}
+      <span className="text-gray-400 italic">
+        (First-time load may take up to 30 seconds while the server starts)
+      </span>
+    </p>
+  </div>
+) : error ? (
+  <p className="text-center mt-10 text-red-600 text-lg font-semibold">
+    ⚠️ {error}. Please try refreshing the page.
+  </p>
+) : filteredProducts.length > 0 ? (
         <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {filteredProducts.map((product) => (
             <ProductCard
