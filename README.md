@@ -3,7 +3,7 @@
 [Live Demo](https://shoppee-psi.vercel.app) | [GitHub Repo](https://github.com/mhtbtanvir/Shoppee)
 
 ### 🔗 Backend API
-The backend is hosted at: [https://shoppee-sb9u.onrender.com](https://shoppee-sb9u.onrender.com)
+[https://shoppee-sb9u.onrender.com](https://shoppee-sb9u.onrender.com)
 
 
 > **Admin Panel Access:**  
